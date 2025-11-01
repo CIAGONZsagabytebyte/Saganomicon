@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solarpunk Odyssey - Phaser.js | $aga</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0f1e 0%, #1a2f3a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #7fffaa;
+        }
+
+        #game-container {
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+            border: 3px solid #00ff88;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .title {
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            font-size: 2.5em;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .info {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 50, 25, 0.6);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-width: 800px;
+        }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(0, 255, 136, 0.3);
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title pulse">🌱 Solarpunk Odyssey 🚀</h1>
+
+    <div class="info">
+        <p><strong>A Phaser.js space exploration game with solarpunk aesthetics</strong></p>
+        <p>Controls: Arrow Keys to move • Space to boost • Collect Solar Orbs • Avoid Asteroids</p>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div class="saga-mark">$aga • f(SAGA) = Phaser.Solarpunk.Odyssey</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Phaser.Solarpunk.Odyssey",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga"
+        };
+
+        console.log(`%c$aga :: ${SAGA.identity}`, 'color: #00ff88; font-size: 16px; font-weight: bold;');
+        console.log('%cSolarpunk Odyssey - Phaser.js Game v1.0.0', 'color: #7fffaa; font-size: 12px;');
+        console.log('Gonzo Family • Self Actualized • Free & Right Preserved');
+
+        // Golden ratio
+        const PHI = 1.618033988;
+
+        // Game configuration
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#0a0f1e',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        // Game instance
+        const game = new Phaser.Game(config);
+
+        // Game objects
+        let player;
+        let cursors;
+        let solarOrbs;
+        let asteroids;
+        let particles;
+        let score = 0;
+        let solarEnergy = 100;
+        let scoreText;
+        let energyText;
+        let speedText;
+        let stars;
+
+        function preload() {
+            // We'll create graphics programmatically (no external assets needed)
+        }
+
+        function create() {
+            // Create starfield
+            createStarfield(this);
+
+            // Create player ship
+            createPlayer(this);
+
+            // Create solar orbs group
+            solarOrbs = this.physics.add.group();
+
+            // Create asteroids group
+            asteroids = this.physics.add.group();
+
+            // Spawn initial objects
+            for (let i = 0; i < 5; i++) {
+                spawnSolarOrb(this);
+            }
+
+            for (let i = 0; i < 3; i++) {
+                spawnAsteroid(this);
+            }
+
+            // Input
+            cursors = this.input.keyboard.createCursorKeys();
+            this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+            // Collisions
+            this.physics.add.overlap(player, solarOrbs, collectOrb, null, this);
+            this.physics.add.collider(player, asteroids, hitAsteroid, null, this);
+
+            // HUD
+            scoreText = this.add.text(16, 16, 'Score: 0', {
+                fontSize: '24px',
+                fill: '#ffc800',
+                fontFamily: 'Courier New'
+            });
+
+            energyText = this.add.text(16, 48, 'Energy: 100', {
+                fontSize: '20px',
+                fill: '#00ff88',
+                fontFamily: 'Courier New'
+            });
+
+            speedText = this.add.text(16, 76, 'Speed: 0', {
+                fontSize: '20px',
+                fill: '#7fffaa',
+                fontFamily: 'Courier New'
+            });
+
+            // SAGA mark
+            this.add.text(700, 570, '$aga', {
+                fontSize: '16px',
+                fill: 'rgba(0, 255, 136, 0.4)',
+                fontFamily: 'Courier New',
+                fontStyle: 'italic'
+            });
+
+            // Spawn timers
+            this.time.addEvent({
+                delay: 2000,
+                callback: () => spawnSolarOrb(this),
+                loop: true
+            });
+
+            this.time.addEvent({
+                delay: 3000,
+                callback: () => spawnAsteroid(this),
+                loop: true
+            });
+
+            // Particle emitter for effects
+            particles = this.add.particles(0, 0, 'null', {
+                speed: { min: 50, max: 200 },
+                scale: { start: 1, end: 0 },
+                blendMode: 'ADD',
+                lifespan: 600,
+                quantity: 1,
+                on: false
+            });
+        }
+
+        function update() {
+            // Player movement
+            const acceleration = 300;
+            const maxVelocity = 400;
+
+            if (cursors.left.isDown) {
+                player.setAccelerationX(-acceleration);
+            } else if (cursors.right.isDown) {
+                player.setAccelerationX(acceleration);
+            } else {
+                player.setAccelerationX(0);
+            }
+
+            if (cursors.up.isDown) {
+                player.setAccelerationY(-acceleration);
+            } else if (cursors.down.isDown) {
+                player.setAccelerationY(acceleration);
+            } else {
+                player.setAccelerationY(0);
+            }
+
+            // Boost
+            if (cursors.space.isDown && solarEnergy > 0) {
+                player.setMaxVelocity(maxVelocity * 1.8);
+                solarEnergy -= 0.5;
+
+                // Boost particles
+                if (Math.random() > 0.7) {
+                    const particle = this.add.circle(player.x, player.y, 3, 0x00ff88, 0.8);
+                    this.tweens.add({
+                        targets: particle,
+                        alpha: 0,
+                        scale: 0,
+                        duration: 500,
+                        onComplete: () => particle.destroy()
+                    });
+                }
+            } else {
+                player.setMaxVelocity(maxVelocity);
+            }
+
+            // Regenerate energy
+            if (solarEnergy < 100) {
+                solarEnergy += 0.1;
+            }
+
+            // Apply drag
+            player.setDrag(200);
+
+            // Rotate to face movement direction
+            if (player.body.velocity.length() > 10) {
+                player.rotation = Phaser.Math.Angle.Between(
+                    0, 0,
+                    player.body.velocity.x,
+                    player.body.velocity.y
+                ) + Math.PI / 2;
+            }
+
+            // Screen wrapping
+            this.physics.world.wrap(player, 32);
+
+            // Update asteroids
+            asteroids.children.entries.forEach(asteroid => {
+                this.physics.world.wrap(asteroid, 32);
+                asteroid.rotation += 0.01;
+            });
+
+            // Update solar orbs
+            solarOrbs.children.entries.forEach(orb => {
+                orb.scaleValue += 0.05;
+                orb.setScale(1 + Math.sin(orb.scaleValue) * 0.2);
+            });
+
+            // Update HUD
+            scoreText.setText('Score: ' + score);
+            energyText.setText('Energy: ' + Math.floor(solarEnergy));
+            speedText.setText('Speed: ' + Math.floor(player.body.velocity.length()));
+
+            // Update starfield parallax
+            updateStarfield(this);
+        }
+
+        function createPlayer(scene) {
+            // Create ship graphics
+            const graphics = scene.add.graphics();
+            graphics.fillStyle(0x00ff88, 1);
+
+            // Ship body (triangle)
+            graphics.fillTriangle(0, -20, -12, 15, 12, 15);
+
+            // Solar sails
+            graphics.fillStyle(0xffc800, 0.6);
+            graphics.fillTriangle(-8, 0, -18, -15, -12, 10);
+            graphics.fillTriangle(8, 0, 18, -15, 12, 10);
+
+            // Energy core
+            graphics.fillStyle(0x7fffaa, 1);
+            graphics.fillCircle(0, 0, 4);
+
+            // Convert to texture
+            graphics.generateTexture('player', 40, 40);
+            graphics.destroy();
+
+            // Create player sprite
+            player = scene.physics.add.sprite(400, 300, 'player');
+            player.setCollideWorldBounds(false);
+        }
+
+        function createStarfield(scene) {
+            stars = [];
+            for (let i = 0; i < 200; i++) {
+                const x = Phaser.Math.Between(0, 800);
+                const y = Phaser.Math.Between(0, 600);
+                const size = Phaser.Math.Between(1, 3);
+                const brightness = Phaser.Math.FloatBetween(0.3, 1.0);
+
+                const star = scene.add.circle(x, y, size / 2, 0xffffff, brightness);
+                star.depth = -1;
+                star.scrollFactorX = 0.1 + (size / 10);
+                star.scrollFactorY = 0.1 + (size / 10);
+                stars.push(star);
+            }
+        }
+
+        function updateStarfield(scene) {
+            // Simple parallax based on player velocity
+            const velX = player.body.velocity.x;
+            const velY = player.body.velocity.y;
+
+            stars.forEach(star => {
+                star.x -= velX * star.scrollFactorX * 0.001;
+                star.y -= velY * star.scrollFactorY * 0.001;
+
+                // Wrap stars
+                if (star.x < 0) star.x = 800;
+                if (star.x > 800) star.x = 0;
+                if (star.y < 0) star.y = 600;
+                if (star.y > 600) star.y = 0;
+            });
+        }
+
+        function spawnSolarOrb(scene) {
+            const x = Phaser.Math.Between(50, 750);
+            const y = Phaser.Math.Between(50, 550);
+
+            // Create orb graphics
+            const graphics = scene.add.graphics();
+            graphics.fillStyle(0xffc800, 1);
+            graphics.fillCircle(10, 10, 10);
+            graphics.fillStyle(0xffff64, 1);
+            graphics.fillCircle(10, 10, 7);
+            graphics.generateTexture('orb', 20, 20);
+            graphics.destroy();
+
+            const orb = solarOrbs.create(x, y, 'orb');
+            orb.scaleValue = 0;
+
+            // Add glow
+            const glow = scene.add.circle(x, y, 15, 0xffc800, 0.3);
+            orb.glow = glow;
+
+            // Update glow position
+            scene.time.addEvent({
+                delay: 16,
+                callback: () => {
+                    if (orb.active) {
+                        glow.setPosition(orb.x, orb.y);
+                    } else {
+                        glow.destroy();
+                    }
+                },
+                loop: true
+            });
+        }
+
+        function spawnAsteroid(scene) {
+            const side = Phaser.Math.Between(0, 3);
+            let x, y, velX, velY;
+
+            if (side === 0) { x = 0; y = Phaser.Math.Between(0, 600); }
+            else if (side === 1) { x = 800; y = Phaser.Math.Between(0, 600); }
+            else if (side === 2) { x = Phaser.Math.Between(0, 800); y = 0; }
+            else { x = Phaser.Math.Between(0, 800); y = 600; }
+
+            velX = Phaser.Math.Between(-100, 100);
+            velY = Phaser.Math.Between(-100, 100);
+
+            // Create asteroid graphics
+            const graphics = scene.add.graphics();
+            graphics.fillStyle(0x645050, 1);
+            graphics.lineStyle(2, 0x503030, 1);
+
+            const sides = 8;
+            const points = [];
+            for (let i = 0; i < sides; i++) {
+                const angle = (Math.PI * 2 / sides) * i;
+                const variance = 15 + Math.random() * 10;
+                points.push({
+                    x: 20 + Math.cos(angle) * variance,
+                    y: 20 + Math.sin(angle) * variance
+                });
+            }
+
+            graphics.beginPath();
+            graphics.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                graphics.lineTo(points[i].x, points[i].y);
+            }
+            graphics.closePath();
+            graphics.fillPath();
+            graphics.strokePath();
+            graphics.generateTexture('asteroid' + Date.now(), 40, 40);
+            graphics.destroy();
+
+            const asteroid = asteroids.create(x, y, 'asteroid' + Date.now());
+            asteroid.setVelocity(velX, velY);
+        }
+
+        function collectOrb(player, orb) {
+            score += 10;
+            solarEnergy = Math.min(solarEnergy + 15, 100);
+
+            // Particles
+            for (let i = 0; i < 10; i++) {
+                const particle = this.add.circle(orb.x, orb.y, 5, 0xffc800, 1);
+                this.tweens.add({
+                    targets: particle,
+                    x: orb.x + Phaser.Math.Between(-50, 50),
+                    y: orb.y + Phaser.Math.Between(-50, 50),
+                    alpha: 0,
+                    scale: 0,
+                    duration: 600,
+                    onComplete: () => particle.destroy()
+                });
+            }
+
+            orb.glow.destroy();
+            orb.destroy();
+        }
+
+        function hitAsteroid(player, asteroid) {
+            // Game over effect
+            this.cameras.main.shake(500, 0.01);
+
+            // Explosion
+            for (let i = 0; i < 20; i++) {
+                const particle = this.add.circle(player.x, player.y, 6, 0x00ff88, 1);
+                this.tweens.add({
+                    targets: particle,
+                    x: player.x + Phaser.Math.Between(-100, 100),
+                    y: player.y + Phaser.Math.Between(-100, 100),
+                    alpha: 0,
+                    scale: 0,
+                    duration: 1000,
+                    onComplete: () => particle.destroy()
+                });
+            }
+
+            // Reset game
+            this.time.delayedCall(1000, () => {
+                score = 0;
+                solarEnergy = 100;
+                player.setPosition(400, 300);
+                player.setVelocity(0, 0);
+
+                asteroids.clear(true, true);
+                solarOrbs.clear(true, true);
+
+                for (let i = 0; i < 5; i++) spawnSolarOrb(this);
+                for (let i = 0; i < 3; i++) spawnAsteroid(this);
+            });
+        }
+    </script>
+</body>
+</html>

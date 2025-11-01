@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solarpunk Space Canvas - $aga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0f1e 0%, #1a2f3a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #7fffaa;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h1 {
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+
+        #gameCanvas {
+            border: 3px solid #00ff88;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            background: #0a0f1e;
+        }
+
+        .hud {
+            display: flex;
+            gap: 30px;
+            padding: 15px 30px;
+            background: rgba(0, 50, 25, 0.6);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            min-width: 600px;
+            justify-content: space-around;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hud-label {
+            color: #7fffaa;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .hud-value {
+            color: #00ff88;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .controls {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 50, 25, 0.4);
+            border: 2px solid #2d5a3d;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+
+        .controls p {
+            margin: 5px 0;
+            color: #7fffaa;
+        }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(0, 255, 136, 0.3);
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        #gameOver {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border: 3px solid #ff4444;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #gameOver h2 {
+            color: #ff4444;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        #gameOver p {
+            color: #7fffaa;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        #gameOver button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: #00ff88;
+            color: #0a0f1e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #gameOver button:hover {
+            background: #7fffaa;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="pulse">🌱 Solarpunk Space 🚀</h1>
+
+        <div class="hud">
+            <div class="hud-item">
+                <div class="hud-label">⚡ Score</div>
+                <div class="hud-value" id="score">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">☀️ Orbs</div>
+                <div class="hud-value" id="orbs">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">💨 Speed</div>
+                <div class="hud-value" id="speed">0</div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div class="controls">
+            <p><strong>Controls:</strong> Arrow Keys / WASD to move • Space to boost</p>
+            <p><strong>Goal:</strong> Collect Solar Orbs • Avoid Debris • Survive!</p>
+        </div>
+    </div>
+
+    <div id="gameOver">
+        <h2>GAME OVER</h2>
+        <p id="finalScore"></p>
+        <p id="highScore"></p>
+        <button onclick="restartGame()">RESTART</button>
+    </div>
+
+    <div class="saga-mark">$aga • f(SAGA) = Web.Canvas.Solarpunk</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Web.Canvas.Solarpunk.Game",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga"
+        };
+
+        console.log(`%c$aga :: ${SAGA.identity}`, 'color: #00ff88; font-size: 16px; font-weight: bold;');
+        console.log('%cSolarpunk Space Canvas Game v1.0.0', 'color: #7fffaa; font-size: 12px;');
+        console.log('Gonzo Family • Self Actualized • Free & Right Preserved');
+
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Golden ratio
+        const PHI = 1.618033988;
+
+        // Game state
+        let gameState = {
+            playing: true,
+            score: 0,
+            highScore: localStorage.getItem('solarpunk_highscore') || 0,
+            orbsCollected: 0,
+            frame: 0
+        };
+
+        // Player
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            vx: 0,
+            vy: 0,
+            angle: 0,
+            size: 20,
+            maxSpeed: 6,
+            acceleration: 0.3,
+            friction: 0.95,
+            boostActive: false
+        };
+
+        // Game objects
+        let solarOrbs = [];
+        let debris = [];
+        let particles = [];
+        let stars = [];
+
+        // Input
+        let keys = {};
+
+        // Initialize
+        function init() {
+            // Create background stars
+            for (let i = 0; i < 150; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 0.5 + 0.1
+                });
+            }
+
+            // Initial orbs
+            for (let i = 0; i < 5; i++) {
+                spawnOrb();
+            }
+
+            // Initial debris
+            for (let i = 0; i < 3; i++) {
+                spawnDebris();
+            }
+
+            // Event listeners
+            document.addEventListener('keydown', e => keys[e.code] = true);
+            document.addEventListener('keyup', e => keys[e.code] = false);
+
+            // Start game loop
+            gameLoop();
+        }
+
+        // Spawn solar orb
+        function spawnOrb() {
+            solarOrbs.push({
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 100) + 50,
+                radius: 12,
+                pulse: Math.random() * Math.PI * 2,
+                collected: false
+            });
+        }
+
+        // Spawn debris
+        function spawnDebris() {
+            const side = Math.floor(Math.random() * 4);
+            let x, y;
+
+            if (side === 0) { x = 0; y = Math.random() * canvas.height; }
+            else if (side === 1) { x = canvas.width; y = Math.random() * canvas.height; }
+            else if (side === 2) { x = Math.random() * canvas.width; y = 0; }
+            else { x = Math.random() * canvas.width; y = canvas.height; }
+
+            debris.push({
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                size: Math.random() * 20 + 15,
+                rotation: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 0.1
+            });
+        }
+
+        // Create particles
+        function createParticles(x, y, color, count = 10) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 1,
+                    decay: Math.random() * 0.02 + 0.02,
+                    size: Math.random() * 5 + 2,
+                    color: color
+                });
+            }
+        }
+
+        // Update
+        function update() {
+            if (!gameState.playing) return;
+
+            gameState.frame++;
+
+            // Update player
+            if (keys['ArrowLeft'] || keys['KeyA']) {
+                player.vx -= player.acceleration;
+            }
+            if (keys['ArrowRight'] || keys['KeyD']) {
+                player.vx += player.acceleration;
+            }
+            if (keys['ArrowUp'] || keys['KeyW']) {
+                player.vy -= player.acceleration;
+            }
+            if (keys['ArrowDown'] || keys['KeyS']) {
+                player.vy += player.acceleration;
+            }
+
+            // Boost
+            player.boostActive = keys['Space'];
+            if (player.boostActive) {
+                const boost = 1.2;
+                player.vx *= boost;
+                player.vy *= boost;
+            }
+
+            // Apply friction
+            player.vx *= player.friction;
+            player.vy *= player.friction;
+
+            // Limit speed
+            const speed = Math.sqrt(player.vx * player.vx + player.vy * player.vy);
+            if (speed > player.maxSpeed) {
+                player.vx = (player.vx / speed) * player.maxSpeed;
+                player.vy = (player.vy / speed) * player.maxSpeed;
+            }
+
+            // Update position
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Update angle based on velocity
+            if (Math.abs(player.vx) > 0.1 || Math.abs(player.vy) > 0.1) {
+                player.angle = Math.atan2(player.vy, player.vx);
+            }
+
+            // Screen wrapping
+            if (player.x < 0) player.x = canvas.width;
+            if (player.x > canvas.width) player.x = 0;
+            if (player.y < 0) player.y = canvas.height;
+            if (player.y > canvas.height) player.y = 0;
+
+            // Update stars (parallax)
+            stars.forEach(star => {
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            });
+
+            // Update solar orbs
+            solarOrbs.forEach((orb, index) => {
+                orb.pulse += 0.1;
+
+                // Check collision with player
+                const dx = player.x - orb.x;
+                const dy = player.y - orb.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < player.size + orb.radius) {
+                    gameState.score += 10;
+                    gameState.orbsCollected++;
+                    createParticles(orb.x, orb.y, '#ffc800', 15);
+                    solarOrbs.splice(index, 1);
+                }
+            });
+
+            // Update debris
+            debris.forEach((d, index) => {
+                d.x += d.vx;
+                d.y += d.vy;
+                d.rotation += d.rotSpeed;
+
+                // Screen wrapping
+                if (d.x < -50) d.x = canvas.width + 50;
+                if (d.x > canvas.width + 50) d.x = -50;
+                if (d.y < -50) d.y = canvas.height + 50;
+                if (d.y > canvas.height + 50) d.y = -50;
+
+                // Check collision with player
+                const dx = player.x - d.x;
+                const dy = player.y - d.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < player.size + d.size) {
+                    gameOver();
+                }
+            });
+
+            // Update particles
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.98;
+                p.vy *= 0.98;
+                p.life -= p.decay;
+
+                if (p.life <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            // Spawn new orbs
+            if (gameState.frame % 120 === 0) {
+                spawnOrb();
+            }
+
+            // Spawn new debris (difficulty increases with score)
+            const debrisRate = Math.max(90, 180 - Math.floor(gameState.score / 100) * 10);
+            if (gameState.frame % debrisRate === 0) {
+                spawnDebris();
+            }
+
+            // Limit debris
+            if (debris.length > 20) {
+                debris.shift();
+            }
+
+            // Update HUD
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('orbs').textContent = gameState.orbsCollected;
+            document.getElementById('speed').textContent = Math.floor(speed * 10);
+        }
+
+        // Draw
+        function draw() {
+            // Clear
+            ctx.fillStyle = '#0a0f1e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars
+            stars.forEach(star => {
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = 0.8;
+                ctx.fillRect(star.x, star.y, star.size, star.size);
+                ctx.globalAlpha = 1;
+            });
+
+            // Draw particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+
+            // Draw solar orbs
+            solarOrbs.forEach(orb => {
+                const pulseSize = Math.sin(orb.pulse) * 3;
+
+                // Glow
+                const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.radius + pulseSize + 10);
+                gradient.addColorStop(0, 'rgba(255, 200, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 200, 0, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(orb.x, orb.y, orb.radius + pulseSize + 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core
+                ctx.fillStyle = '#ffc800';
+                ctx.beginPath();
+                ctx.arc(orb.x, orb.y, orb.radius + pulseSize, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffff64';
+                ctx.beginPath();
+                ctx.arc(orb.x, orb.y, orb.radius + pulseSize - 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw debris
+            debris.forEach(d => {
+                ctx.save();
+                ctx.translate(d.x, d.y);
+                ctx.rotate(d.rotation);
+
+                ctx.fillStyle = '#645050';
+                ctx.strokeStyle = '#503030';
+                ctx.lineWidth = 2;
+
+                ctx.beginPath();
+                const sides = 6;
+                for (let i = 0; i < sides; i++) {
+                    const angle = (Math.PI * 2 / sides) * i;
+                    const variance = Math.random() * 0.3 + 0.85;
+                    const x = Math.cos(angle) * d.size * variance;
+                    const y = Math.sin(angle) * d.size * variance;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.restore();
+            });
+
+            // Draw player
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.angle);
+
+            // Ship body
+            ctx.fillStyle = '#00ff88';
+            ctx.beginPath();
+            ctx.moveTo(player.size, 0);
+            ctx.lineTo(-player.size * 0.7, -player.size * 0.7);
+            ctx.lineTo(-player.size * 0.5, 0);
+            ctx.lineTo(-player.size * 0.7, player.size * 0.7);
+            ctx.closePath();
+            ctx.fill();
+
+            // Solar sails
+            ctx.fillStyle = 'rgba(255, 200, 0, 0.6)';
+            ctx.beginPath();
+            ctx.moveTo(-player.size * 0.3, -player.size * 0.5);
+            ctx.lineTo(-player.size * 1.2, -player.size * 1.2);
+            ctx.lineTo(-player.size * 0.7, -player.size * 0.7);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(-player.size * 0.3, player.size * 0.5);
+            ctx.lineTo(-player.size * 1.2, player.size * 1.2);
+            ctx.lineTo(-player.size * 0.7, player.size * 0.7);
+            ctx.closePath();
+            ctx.fill();
+
+            // Energy core
+            ctx.fillStyle = '#7fffaa';
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Boost trail
+            if (player.boostActive) {
+                ctx.fillStyle = 'rgba(0, 255, 136, 0.4)';
+                ctx.beginPath();
+                ctx.moveTo(-player.size * 0.5, 0);
+                ctx.lineTo(-player.size * 1.5, -player.size * 0.3);
+                ctx.lineTo(-player.size * 1.5, player.size * 0.3);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Game over
+        function gameOver() {
+            gameState.playing = false;
+
+            // Update high score
+            if (gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('solarpunk_highscore', gameState.highScore);
+            }
+
+            // Show game over screen
+            document.getElementById('finalScore').textContent = `Final Score: ${gameState.score}`;
+            document.getElementById('highScore').textContent = `High Score: ${gameState.highScore}`;
+            document.getElementById('gameOver').style.display = 'block';
+
+            createParticles(player.x, player.y, '#00ff88', 30);
+        }
+
+        // Restart
+        function restartGame() {
+            gameState.playing = true;
+            gameState.score = 0;
+            gameState.orbsCollected = 0;
+            gameState.frame = 0;
+
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            player.vx = 0;
+            player.vy = 0;
+            player.angle = 0;
+
+            solarOrbs = [];
+            debris = [];
+            particles = [];
+
+            for (let i = 0; i < 5; i++) spawnOrb();
+            for (let i = 0; i < 3; i++) spawnDebris();
+
+            document.getElementById('gameOver').style.display = 'none';
+        }
+
+        // Initialize game
+        init();
+    </script>
+</body>
+</html>

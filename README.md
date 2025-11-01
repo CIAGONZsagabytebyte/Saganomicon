@@ -1,6 +1,6 @@
 # 🌌 Saganomicon 🌱
 
-**A Collection of Solarpunk & Space Travel Games and Applications**
+**The Complete Solarpunk & Space Travel Game Development Suite**
 
 *$aga • SAGA Functional Identity System*
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Saganomicon is a comprehensive suite of video games and applications that blend **solarpunk sustainability** with **space travel exploration**, incorporating **sacred geometry**, **DMT/Eden interpretation**, and **binary quantum patterns**. All code contains the `$aga` Easter egg, marking its origin from the Gonzo Family Self-Actualized system.
+Saganomicon is a comprehensive collection of **playable games**, **development prototypes**, and **utility applications** that blend **solarpunk sustainability** with **space travel exploration**. This repository provides everything you need to start building solarpunk space games across multiple platforms and frameworks.
 
 ### Core Themes
 
@@ -19,11 +19,44 @@ Saganomicon is a comprehensive suite of video games and applications that blend 
 
 ---
 
-## 🎮 Video Games
+## 📂 Repository Structure
 
-### Solarpunk Games
+```
+Saganomicon/
+├── games/                          # Playable web games
+│   ├── solarpunk/                  # Solarpunk city builder
+│   ├── space/                      # Space exploration
+│   ├── binary/                     # Quantum puzzle game
+│   └── fusion/                     # Orbital station manager
+├── apps/python/                    # Python utility applications
+│   ├── solarpunk_calculator.py     # Resource optimization
+│   ├── serpent_trajectory.py       # Trajectory planning
+│   ├── eden_pattern_generator.py   # Sacred geometry
+│   ├── space_weather.py            # Cosmic weather simulator
+│   └── ship_designer.py            # Ship design tool
+├── pygame_solarpunk/               # Pygame 2D game prototype
+│   ├── main.py                     # Game loop
+│   └── game_objects.py             # Game entities
+├── web_solarpunk/                  # Web canvas game
+│   └── index.html                  # Browser-based game
+├── binary_art/                     # Procedural art generator
+│   ├── binary_art.py               # Art generation script
+│   └── output/                     # Generated images
+├── unity/                          # Unity engine components
+│   └── SolarpunkShipController.cs  # C# ship controller
+├── godot/                          # Godot engine components
+│   ├── SolarpunkShip.gd            # GDScript controller
+│   └── README.md                   # Godot setup guide
+├── phaser_game/                    # Phaser.js web game
+│   └── index.html                  # Framework-based game
+└── README.md                       # This file
+```
 
-#### 🌱 Eden Garden City
+---
+
+## 🎮 Playable Web Games
+
+### 🌱 Eden Garden City
 **Location:** `games/solarpunk/eden_garden_city.html`
 
 Build a sustainable solarpunk paradise through the Recursive Eden Protocol. Manage energy, water, biomass, and population while creating a harmonious eco-city.
@@ -34,20 +67,12 @@ Build a sustainable solarpunk paradise through the Recursive Eden Protocol. Mana
 - 5 building types: Solar Panels, Gardens, Water Systems, Eco-Dwellings, Sacred Trees
 - Real-time production cycles (3-second Eden rhythm)
 - Eden Index calculation using sacred metrics
-- Sustainability, Happiness, and Efficiency tracking
 
-**How to Play:**
-1. Open the HTML file in a web browser
-2. Select a building type from the tools panel
-3. Click grid cells to place buildings
-4. Watch resources cycle every 3 seconds
-5. Maximize your Eden Index!
+**How to Play:** Open the HTML file in a web browser, select buildings, and manage resources to maximize your Eden Index!
 
 ---
 
-### Space Travel Games
-
-#### 🐍 Serpent Voyage
+### 🐍 Serpent Voyage
 **Location:** `games/space/serpent_voyage.html`
 
 Navigate the cosmic serpent path through infinite space. Explore sectors, discover artifacts, and manage your ship's systems on an interstellar journey.
@@ -56,23 +81,14 @@ Navigate the cosmic serpent path through infinite space. Explore sectors, discov
 - Procedurally generated space sectors with DMT serpent patterns
 - 8-directional navigation system
 - Ship systems: Fuel, Hull Integrity, Warp Drive
-- Sector scanning for discoveries
 - Multiple discovery types: Planets, Nebulae, Ancient Stations, Quantum Anomalies, Serpent Artifacts
 - Dynamic event system (meteor showers, solar winds, energy fields)
-- Serpent Path Length tracking
 
-**How to Play:**
-1. Open the HTML file in a web browser
-2. Use arrow buttons to navigate through space
-3. Click "Scan" to discover what's in your current sector
-4. Manage fuel and ship integrity
-5. Find Serpent Artifacts to fully restore your ship!
+**How to Play:** Navigate with arrow buttons, scan sectors for discoveries, and manage ship resources!
 
 ---
 
-### Binary/Quantum Games
-
-#### ⚛️ Quantum Codex
+### ⚛️ Quantum Codex
 **Location:** `games/binary/quantum_codex.html`
 
 Decode the binary dimension through quantum pattern matching. Manipulate bits to match target patterns in this puzzle game featuring the 70-Byte binary manifestation.
@@ -82,23 +98,13 @@ Decode the binary dimension through quantum pattern matching. Manipulate bits to
 - Real-time decimal and hexadecimal conversion
 - 4 difficulty levels: Easy, Medium, Hard, Quantum
 - Quantum operations: Randomize, Clear, Invert
-- Locked bit challenges in harder modes
-- Quantum Coherence percentage tracking
-- Matrix-style falling binary background
 - Level progression and scoring system
 
-**How to Play:**
-1. Open the HTML file in a web browser
-2. Click bits to toggle between 0 and 1
-3. Match the target binary pattern shown above
-4. Submit solution when ready
-5. Progress through increasingly complex quantum patterns!
+**How to Play:** Toggle bits to match the target pattern, submit solutions, and progress through quantum challenges!
 
 ---
 
-### Fusion Games (Solarpunk + Space)
-
-#### 🌌 Cosmic Eden Station
+### 🌌 Cosmic Eden Station
 **Location:** `games/fusion/cosmic_eden_station.html`
 
 Build a self-sustaining orbital paradise where solarpunk dreams meet the infinite stars. Manage a space station with 12 module slots in a rotating ring configuration.
@@ -107,21 +113,166 @@ Build a self-sustaining orbital paradise where solarpunk dreams meet the infinit
 - Circular 12-module orbital station
 - 6 resource types: Energy, Water, Oxygen, Food, Materials, Population
 - 5 module types: Solar Arrays, Hydro Systems, Bio Domes, Habitats, Fusion Cores
-- Proper Eden/space spacing with sacred timing
 - Dynamic event system (meteor showers, solar flares, supply pods)
-- Sustainability, Crew Morale, and Orbit Day tracking
 - Cosmic-Eden Harmony metric (sacred balance calculation)
 
-**How to Play:**
-1. Open the HTML file in a web browser
-2. Select a module type from construction panel
-3. Click empty slots in the rotating ring to place modules
-4. Watch resources cycle every 3 seconds
-5. Balance technology and nature for maximum harmony!
+**How to Play:** Select modules, place them in the orbital ring, and balance technology with nature!
 
 ---
 
-## 🐍 Python Applications
+## 🎲 Game Prototypes & Starter Kits
+
+### 🐍 Pygame Prototype (v2 - Playable Demo)
+**Location:** `pygame_solarpunk/`
+
+A fully playable 2D space game built with Pygame featuring solarpunk aesthetics.
+
+**Gameplay:**
+- Fly your ship through space
+- Collect "Solar Orbs" to score points
+- Avoid floating "Debris" obstacles
+- Features: Player movement, parallax starfield, collectibles, obstacles with pixel-perfect collision, game-over/restart loop
+
+**Code Organization:**
+- `main.py` - Game loop, menus, HUD
+- `game_objects.py` - Player, orbs, debris, particles, stars
+
+**How to Run:**
+```bash
+pip install pygame
+python pygame_solarpunk/main.py
+```
+
+**Controls:**
+- Arrow Keys / WASD: Move ship
+- Space: Start game / Boost
+- ESC: Menu / Quit
+
+---
+
+### 🌐 Web Canvas Prototype
+**Location:** `web_solarpunk/index.html`
+
+Lightweight, shareable mini-game for browser with no external dependencies.
+
+**Features:**
+- Pure HTML5 canvas rendering
+- Physics-based ship movement
+- Solar orb collection
+- Debris obstacles
+- Score tracking with local storage
+- Responsive controls
+
+**How to Run:**
+1. Open `web_solarpunk/index.html` in a browser
+2. Or serve with: `python -m http.server` and visit http://localhost:8000
+
+**Controls:**
+- Arrow Keys / WASD: Move
+- Space: Boost
+
+---
+
+### 🎨 Binary Art Generator
+**Location:** `binary_art/binary_art.py`
+
+Generates procedural tilemaps and textures from binary patterns using sacred geometry.
+
+**Generated Patterns:**
+- Binary Tilemap - Procedural tile patterns
+- Quantum Noise - Interference textures
+- Sacred Grid - Golden ratio geometry
+- Serpent Wave - DMT wave patterns
+- Binary Matrix - Falling code effect
+- Eden Fractal - Recursive tree growth
+
+**How to Run:**
+```bash
+pip install pillow
+python binary_art/binary_art.py
+```
+
+**Output:** PNG files generated in `binary_art/output/` directory
+
+---
+
+### 🎮 Unity C# Controller
+**Location:** `unity/SolarpunkShipController.cs`
+
+A complete spaceship controller for Unity with solarpunk mechanics and sacred geometry physics.
+
+**Features:**
+- 2D and 3D movement modes
+- Solar boost system with energy management
+- Golden ratio physics optimization
+- Serpent path following (advanced navigation)
+- Configurable via Inspector
+- Built-in debug HUD
+
+**How to Use:**
+1. Create a Unity project
+2. Create GameObject, add this script
+3. Attach Rigidbody/Rigidbody2D
+4. Configure settings in Inspector
+5. Add visual mesh/sprite
+
+**Controls:**
+- Arrow Keys / WASD: Movement
+- Q/E: Up/Down (3D mode)
+- Shift / Space: Solar Boost
+
+---
+
+### 🎲 Godot GDScript Controller
+**Location:** `godot/SolarpunkShip.gd`
+
+A CharacterBody2D controller for Godot Engine with full solarpunk ship mechanics.
+
+**Features:**
+- Physics-based movement
+- Solar boost with energy drain/regen
+- Golden ratio optimization
+- Serpent spiral navigation
+- Easy Inspector configuration
+- Debug visualization
+
+**How to Use:**
+1. Download Godot 4.x
+2. Create 2D project
+3. Create CharacterBody2D scene
+4. Attach script
+5. Add Sprite2D and CollisionShape2D
+6. Configure input mapping
+
+See `godot/README.md` for detailed setup instructions.
+
+---
+
+### 🌐 Phaser.js Web Game
+**Location:** `phaser_game/index.html`
+
+A robust browser game using the Phaser.js framework with arcade physics.
+
+**Features:**
+- Phaser 3.60 framework
+- Arcade physics engine
+- Procedural graphics (no external assets)
+- Particle effects
+- Collision detection
+- Score tracking
+- Auto-spawning enemies
+
+**How to Run:**
+1. Open `phaser_game/index.html` in a browser
+2. Game loads Phaser from CDN automatically
+
+**Controls:**
+- Arrow Keys: Move
+- Space: Boost
+
+---
+
+## 🐍 Python Utility Applications
 
 ### 🌱 Solarpunk Resource Calculator
 **Location:** `apps/python/solarpunk_calculator.py`
@@ -134,7 +285,6 @@ Calculate sustainable energy, water, and biomass requirements for solarpunk comm
 - Biomass production and food yield analysis
 - Eden Index calculation using sacred proportions
 - Comprehensive sustainability reports
-- Interactive or example mode
 
 **Usage:**
 ```bash
@@ -189,7 +339,6 @@ Generate sacred geometry patterns based on DMT/Eden interpretation with proper s
 - Sri Yantra layered triangles
 - ASCII art visualizations
 - Proper spacing calculations using golden ratio
-- Interactive pattern generation mode
 
 **Usage:**
 ```bash
@@ -203,26 +352,60 @@ python3 apps/python/eden_pattern_generator.py
 
 ---
 
-## 🎯 Project Structure
+### 🌌 Space Weather Simulator
+**Location:** `apps/python/space_weather.py`
 
+Simulate cosmic conditions for space travel planning including solar wind, radiation, and cosmic events.
+
+**Features:**
+- Solar wind speed and density simulation
+- Radiation level calculation (solar particles + cosmic rays)
+- Geomagnetic activity (Kp index, aurora predictions)
+- Schumann resonance amplitude tracking
+- Random cosmic event generation (CME, solar flares, etc.)
+- Travel risk assessment
+- 3-day space weather forecast
+
+**Usage:**
+```bash
+python3 apps/python/space_weather.py
 ```
-Saganomicon/
-├── games/
-│   ├── solarpunk/
-│   │   └── eden_garden_city.html
-│   ├── space/
-│   │   └── serpent_voyage.html
-│   ├── binary/
-│   │   └── quantum_codex.html
-│   └── fusion/
-│       └── cosmic_eden_station.html
-├── apps/
-│   └── python/
-│       ├── solarpunk_calculator.py
-│       ├── serpent_trajectory.py
-│       └── eden_pattern_generator.py
-└── README.md
+
+**Output:**
+- Current space weather conditions
+- Solar wind parameters
+- Radiation dose rates
+- Geomagnetic storm levels
+- Travel safety recommendations
+- Upcoming cosmic events
+
+---
+
+### 🚀 Solarpunk Ship Designer
+**Location:** `apps/python/ship_designer.py`
+
+Design and optimize solarpunk spaceships with sacred geometry-based engineering.
+
+**Features:**
+- Component-based ship building system
+- 6 component types: Hull, Solar Sails, Fusion Core, Hydro System, Bio Dome, Crew Quarters
+- Multiple variants for each component
+- Pre-built optimization presets (Speed, Sustainability, Defense, Luxury)
+- Automatic statistics calculation
+- Eden Index scoring (harmony between technology and nature)
+- Golden ratio optimization
+
+**Usage:**
+```bash
+python3 apps/python/ship_designer.py
 ```
+
+**Ship Statistics:**
+- Mass, cost, power output
+- Speed index, armor rating
+- Food/oxygen/water production
+- Sustainability percentage
+- Eden Index harmony score
 
 ---
 
@@ -232,7 +415,7 @@ All games and applications incorporate proper spacing based on:
 
 - **Golden Ratio (Φ)**: 1.618... for optimal proportions
 - **Fibonacci Sequence**: Natural growth patterns
-- **Schumann Resonances**: Earth's electromagnetic frequencies
+- **Schumann Resonances**: Earth's electromagnetic frequencies (7.83 Hz primary)
 - **Sacred Polyhedra**: The five Platonic solids
 - **Flower of Life**: Ancient geometric pattern
 - **Metatron's Cube**: Contains all sacred geometry
@@ -251,17 +434,22 @@ All games and applications incorporate proper spacing based on:
 
 ### Web Games (HTML/JavaScript)
 - Pure HTML5 with embedded CSS and JavaScript
-- No external dependencies
+- No external dependencies (except Phaser.js game)
 - Responsive canvas-based graphics
 - Real-time resource management
 - Local browser storage compatible
 
 ### Python Applications
 - Python 3.6+ compatible
-- No external libraries required (uses only standard library)
-- Interactive CLI interface
+- Minimal dependencies (pygame, pillow only for specific apps)
+- Interactive CLI interfaces
 - Comprehensive calculation engines
 - ASCII art visualization support
+
+### Game Engine Scripts
+- **Unity**: C# for Unity 2020+, supports 2D and 3D
+- **Godot**: GDScript for Godot 4.x, optimized for 2D
+- Cross-platform compatible
 
 ### Code Standards
 - All files contain `$aga` Easter egg
@@ -272,18 +460,51 @@ All games and applications incorporate proper spacing based on:
 
 ---
 
-## 🎮 Quick Start
+## 🎮 Quick Start Guide
 
 ### Play Web Games
-1. Navigate to the `games/` directory
-2. Open any `.html` file in a modern web browser
-3. Start playing immediately!
+```bash
+cd games/solarpunk
+# Open eden_garden_city.html in browser
+# Or use a local server:
+python -m http.server 8000
+# Visit: http://localhost:8000
+```
+
+### Run Pygame Prototype
+```bash
+pip install pygame
+python pygame_solarpunk/main.py
+```
+
+### Generate Binary Art
+```bash
+pip install pillow
+python binary_art/binary_art.py
+# Check binary_art/output/ for images
+```
 
 ### Run Python Apps
-1. Navigate to the `apps/python/` directory
-2. Make scripts executable: `chmod +x *.py`
-3. Run: `python3 <script_name>.py`
-4. Follow interactive prompts
+```bash
+# No installation needed (uses standard library)
+python3 apps/python/solarpunk_calculator.py
+python3 apps/python/serpent_trajectory.py
+python3 apps/python/eden_pattern_generator.py
+python3 apps/python/space_weather.py
+python3 apps/python/ship_designer.py
+```
+
+### Unity Setup
+1. Create Unity project (2D or 3D)
+2. Import `unity/SolarpunkShipController.cs`
+3. Attach to GameObject with Rigidbody
+4. Configure in Inspector
+
+### Godot Setup
+1. Download Godot 4.x
+2. Create 2D project
+3. Follow instructions in `godot/README.md`
+4. Attach `SolarpunkShip.gd` to CharacterBody2D
 
 ---
 
@@ -299,7 +520,7 @@ All games and applications incorporate proper spacing based on:
 - ✓ Real-time simulation
 - ✓ Educational value
 - ✓ Beautiful visualizations
-- ✓ No external dependencies
+- ✓ Minimal external dependencies
 
 ---
 
@@ -323,6 +544,60 @@ All united in recursive, self-actualizing harmony.
 
 ---
 
+## 🎯 Development Roadmap
+
+### Completed ✓
+- 4 playable web games
+- 5 Python utility applications
+- Pygame 2D prototype
+- Web canvas game
+- Binary art generator
+- Unity C# controller
+- Godot GDScript controller
+- Phaser.js web game
+
+### Potential Expansions
+- Multiplayer networking
+- Mobile versions (React Native, Flutter)
+- VR/AR experiences
+- Procedural universe generation
+- Advanced AI navigation
+- Audio synthesis (sacred frequency soundscapes)
+- 3D Unity/Unreal full games
+- Blockchain integration for resource trading
+
+---
+
+## 📚 Learning Resources
+
+### Recommended Topics
+- **Sacred Geometry**: Study the golden ratio, Fibonacci sequence, and Platonic solids
+- **Game Development**: Learn Pygame, Phaser, Unity, or Godot
+- **Sustainability**: Research solarpunk principles and renewable energy
+- **Space Physics**: Orbital mechanics, trajectory planning
+- **Procedural Generation**: Noise functions, fractals, cellular automata
+
+### Suggested Reading
+- "Sacred Geometry" by Robert Lawlor
+- "The Golden Ratio" by Mario Livio
+- "Orbital Mechanics for Engineering Students" by Howard Curtis
+- "Solarpunk: Ecological and Fantastical Stories in a Sustainable World"
+
+---
+
+## 🤝 Contributing
+
+This is an open template and starting point for solarpunk space games. Feel free to:
+
+- Fork and expand games
+- Add new prototypes
+- Create additional utilities
+- Improve visualizations
+- Add sound and music
+- Create tutorials
+
+---
+
 ## 📜 License & Attribution
 
 **$aga** • Gonzo.Family.Self.Actualized
@@ -341,8 +616,46 @@ This code is a permanent mark of origin from the self-actualized Gonzo family, e
 
 ---
 
+## 📞 Support
+
+For questions, bug reports, or feature requests:
+- Open an issue on GitHub
+- Review the code comments (all files are heavily documented)
+- Check the README files in subdirectories
+
+---
+
 **Generated:** 2025-11-01
-**Version:** 1.0.0
+**Version:** 2.0.0
 **Mark:** $aga
 
 🌱🚀⚛️ *May all beings achieve cosmic-eden harmony* 🌌🐍🌀
+
+---
+
+## File Manifest
+
+**Playable Games (4):**
+- games/solarpunk/eden_garden_city.html
+- games/space/serpent_voyage.html
+- games/binary/quantum_codex.html
+- games/fusion/cosmic_eden_station.html
+
+**Python Apps (5):**
+- apps/python/solarpunk_calculator.py
+- apps/python/serpent_trajectory.py
+- apps/python/eden_pattern_generator.py
+- apps/python/space_weather.py
+- apps/python/ship_designer.py
+
+**Prototypes (6):**
+- pygame_solarpunk/ (Pygame 2D game)
+- web_solarpunk/index.html (Canvas game)
+- binary_art/binary_art.py (Art generator)
+- unity/SolarpunkShipController.cs (Unity controller)
+- godot/SolarpunkShip.gd (Godot controller)
+- phaser_game/index.html (Phaser.js game)
+
+**Total: 15 games/apps + prototypes across 6 platforms**
+
+*$aga • The complete solarpunk space development suite*
