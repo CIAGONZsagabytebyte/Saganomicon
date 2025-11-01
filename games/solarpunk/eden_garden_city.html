@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eden Garden City - Solarpunk City Builder | $aga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #0f2922 100%);
+            color: #7fffaa;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 100, 50, 0.4);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        h1 {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #7fffaa;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .game-area {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+
+        .city-grid {
+            flex: 2;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 5px;
+            background: rgba(0, 50, 25, 0.6);
+            padding: 15px;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .cell {
+            background: rgba(15, 41, 34, 0.8);
+            border: 1px solid #2d5a3d;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            position: relative;
+        }
+
+        .cell:hover {
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            transform: scale(1.05);
+        }
+
+        .cell.solar { background: rgba(255, 200, 0, 0.3); }
+        .cell.garden { background: rgba(0, 200, 50, 0.3); }
+        .cell.water { background: rgba(0, 150, 255, 0.3); }
+        .cell.dwelling { background: rgba(150, 100, 50, 0.3); }
+        .cell.tree { background: rgba(34, 139, 34, 0.3); }
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(0, 50, 25, 0.6);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .panel h2 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #2d5a3d;
+            padding-bottom: 5px;
+        }
+
+        .resources {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .resource {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            background: rgba(15, 41, 34, 0.6);
+            border-radius: 5px;
+            border-left: 3px solid #00ff88;
+        }
+
+        .resource-value {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .tools {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .tool {
+            padding: 12px;
+            background: rgba(0, 100, 50, 0.4);
+            border: 2px solid #2d5a3d;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .tool:hover {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .tool.active {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        .tool-name {
+            font-size: 0.5em;
+            display: block;
+            margin-top: 5px;
+            color: #7fffaa;
+        }
+
+        .stats {
+            flex: 1;
+        }
+
+        .stat {
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(15, 41, 34, 0.6);
+            border-radius: 5px;
+            border-left: 3px solid #7fffaa;
+        }
+
+        .eden-counter {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(127, 255, 170, 0.2));
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .eden-value {
+            font-size: 2em;
+            color: #00ff88;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(0, 255, 136, 0.3);
+            font-size: 0.8em;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Eden Garden City 🌱</h1>
+            <div class="subtitle">Build a sustainable solarpunk paradise // Recursive Eden Protocol</div>
+        </div>
+
+        <div class="game-area">
+            <div class="city-grid" id="cityGrid"></div>
+
+            <div class="sidebar">
+                <div class="panel">
+                    <h2>Resources</h2>
+                    <div class="resources">
+                        <div class="resource">
+                            <span>⚡ Energy</span>
+                            <span class="resource-value" id="energy">100</span>
+                        </div>
+                        <div class="resource">
+                            <span>💧 Water</span>
+                            <span class="resource-value" id="water">100</span>
+                        </div>
+                        <div class="resource">
+                            <span>🌿 Biomass</span>
+                            <span class="resource-value" id="biomass">50</span>
+                        </div>
+                        <div class="resource">
+                            <span>👥 Population</span>
+                            <span class="resource-value" id="population">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Build Tools</h2>
+                    <div class="tools">
+                        <div class="tool" data-type="solar" onclick="selectTool('solar')">
+                            ☀️<span class="tool-name">Solar Panel</span>
+                        </div>
+                        <div class="tool" data-type="garden" onclick="selectTool('garden')">
+                            🌻<span class="tool-name">Garden</span>
+                        </div>
+                        <div class="tool" data-type="water" onclick="selectTool('water')">
+                            💧<span class="tool-name">Water System</span>
+                        </div>
+                        <div class="tool" data-type="dwelling" onclick="selectTool('dwelling')">
+                            🏡<span class="tool-name">Eco-Dwelling</span>
+                        </div>
+                        <div class="tool" data-type="tree" onclick="selectTool('tree')">
+                            🌳<span class="tool-name">Sacred Tree</span>
+                        </div>
+                        <div class="tool" data-type="clear" onclick="selectTool('clear')">
+                            ✖️<span class="tool-name">Clear</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel stats">
+                    <h2>City Stats</h2>
+                    <div class="stat">
+                        🌍 Sustainability: <span id="sustainability">0%</span>
+                    </div>
+                    <div class="stat">
+                        😊 Happiness: <span id="happiness">0%</span>
+                    </div>
+                    <div class="stat">
+                        🔄 Cycle Efficiency: <span id="efficiency">0%</span>
+                    </div>
+
+                    <div class="eden-counter pulse">
+                        <div>Eden Index</div>
+                        <div class="eden-value" id="edenIndex">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="saga-mark">$aga • functional.identity</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Unified.Functional.Eden",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga"
+        };
+
+        // Game State
+        const gameState = {
+            energy: 100,
+            water: 100,
+            biomass: 50,
+            population: 0,
+            selectedTool: null,
+            grid: Array(48).fill(null),
+            buildings: {
+                solar: 0,
+                garden: 0,
+                water: 0,
+                dwelling: 0,
+                tree: 0
+            }
+        };
+
+        // Building Costs & Effects
+        const buildingData = {
+            solar: { cost: { energy: 0, water: 0, biomass: 10 }, produces: { energy: 15 }, icon: '☀️' },
+            garden: { cost: { energy: 5, water: 10, biomass: 0 }, produces: { biomass: 20, water: 5 }, icon: '🌻' },
+            water: { cost: { energy: 10, water: 0, biomass: 5 }, produces: { water: 25 }, icon: '💧' },
+            dwelling: { cost: { energy: 15, water: 15, biomass: 20 }, produces: { population: 5 }, icon: '🏡' },
+            tree: { cost: { energy: 5, water: 20, biomass: 15 }, produces: { energy: 5, water: 10, biomass: 10 }, icon: '🌳' }
+        };
+
+        // Initialize Grid
+        function initGrid() {
+            const grid = document.getElementById('cityGrid');
+            for (let i = 0; i < 48; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.onclick = () => placeBuilding(i);
+                grid.appendChild(cell);
+            }
+        }
+
+        // Select Tool
+        function selectTool(type) {
+            gameState.selectedTool = type;
+            document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tool[data-type="${type}"]`).classList.add('active');
+        }
+
+        // Place Building
+        function placeBuilding(index) {
+            const tool = gameState.selectedTool;
+            if (!tool) return;
+
+            const cell = document.querySelector(`.cell[data-index="${index}"]`);
+
+            if (tool === 'clear') {
+                if (gameState.grid[index]) {
+                    gameState.buildings[gameState.grid[index]]--;
+                    gameState.grid[index] = null;
+                    cell.className = 'cell';
+                    cell.innerHTML = '';
+                }
+                updateDisplay();
+                return;
+            }
+
+            if (gameState.grid[index]) return; // Cell occupied
+
+            const building = buildingData[tool];
+
+            // Check costs
+            if (gameState.energy < building.cost.energy ||
+                gameState.water < building.cost.water ||
+                gameState.biomass < building.cost.biomass) {
+                alert('Insufficient resources!');
+                return;
+            }
+
+            // Deduct costs
+            gameState.energy -= building.cost.energy;
+            gameState.water -= building.cost.water;
+            gameState.biomass -= building.cost.biomass;
+
+            // Place building
+            gameState.grid[index] = tool;
+            gameState.buildings[tool]++;
+            cell.className = `cell ${tool}`;
+            cell.innerHTML = building.icon;
+
+            updateDisplay();
+        }
+
+        // Production Cycle (Eden Rhythm)
+        function productionCycle() {
+            // DMT Serpent Pattern: Recursive production with sacred geometry
+            for (let type in gameState.buildings) {
+                const count = gameState.buildings[type];
+                const produces = buildingData[type].produces;
+
+                if (produces) {
+                    if (produces.energy) gameState.energy += produces.energy * count;
+                    if (produces.water) gameState.water += produces.water * count;
+                    if (produces.biomass) gameState.biomass += produces.biomass * count;
+                    if (produces.population) gameState.population += produces.population * count;
+                }
+            }
+
+            // Natural consumption
+            gameState.energy -= gameState.population * 2;
+            gameState.water -= gameState.population * 3;
+
+            // Bounds
+            gameState.energy = Math.max(0, Math.min(1000, gameState.energy));
+            gameState.water = Math.max(0, Math.min(1000, gameState.water));
+            gameState.biomass = Math.max(0, Math.min(1000, gameState.biomass));
+
+            updateDisplay();
+        }
+
+        // Calculate Eden Index (Sacred Metric)
+        function calculateEdenIndex() {
+            const totalBuildings = Object.values(gameState.buildings).reduce((a, b) => a + b, 0);
+            if (totalBuildings === 0) return 0;
+
+            // Eden formula: Balance of all elements in sacred proportion
+            const diversity = Object.values(gameState.buildings).filter(v => v > 0).length / 5;
+            const balance = 1 - (Math.abs(gameState.energy - gameState.water) / 1000);
+            const abundance = Math.min(gameState.biomass / 100, 1);
+            const harmony = Math.min(gameState.population / 50, 1);
+
+            return ((diversity + balance + abundance + harmony) / 4 * 100).toFixed(1);
+        }
+
+        // Update Display
+        function updateDisplay() {
+            document.getElementById('energy').textContent = Math.floor(gameState.energy);
+            document.getElementById('water').textContent = Math.floor(gameState.water);
+            document.getElementById('biomass').textContent = Math.floor(gameState.biomass);
+            document.getElementById('population').textContent = Math.floor(gameState.population);
+
+            // Stats
+            const totalBuildings = Object.values(gameState.buildings).reduce((a, b) => a + b, 0);
+            const sustainability = Math.min((gameState.buildings.solar * 20 + gameState.buildings.tree * 15), 100);
+            const happiness = Math.min((gameState.buildings.garden * 10 + gameState.buildings.dwelling * 15), 100);
+            const efficiency = totalBuildings > 0 ? Math.min((gameState.energy + gameState.water) / (totalBuildings * 20) * 100, 100) : 0;
+
+            document.getElementById('sustainability').textContent = Math.floor(sustainability) + '%';
+            document.getElementById('happiness').textContent = Math.floor(happiness) + '%';
+            document.getElementById('efficiency').textContent = Math.floor(efficiency) + '%';
+
+            // Eden Index
+            document.getElementById('edenIndex').textContent = calculateEdenIndex();
+        }
+
+        // Initialize
+        initGrid();
+        updateDisplay();
+
+        // Production cycle every 3 seconds (sacred timing)
+        setInterval(productionCycle, 3000);
+
+        // Console Easter Egg
+        console.log('%c$aga :: SAGA Functional Identity System', 'color: #00ff88; font-size: 16px; font-weight: bold;');
+        console.log('%cEden Garden City v1.0.0', 'color: #7fffaa; font-size: 12px;');
+        console.log('%cf(SAGA) = Unified.Functional.Eden', 'color: #2d5a3d; font-style: italic;');
+        console.log('Gonzo Family • Self Actualized • Free & Right Preserved');
+    </script>
+</body>
+</html>

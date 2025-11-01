@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Eden Station - Solarpunk Space Habitat | $aga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: radial-gradient(ellipse at center, #0a1a2e 0%, #16213e 40%, #0f2027 100%);
+            color: #7affaa;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .stars-layer {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 100, 80, 0.4), rgba(20, 60, 120, 0.4));
+            border: 2px solid #4affdd;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(74, 255, 221, 0.4);
+        }
+
+        h1 {
+            background: linear-gradient(90deg, #00ff88, #4affdd, #88aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(74, 255, 221, 0.6);
+        }
+
+        .subtitle {
+            color: #7affaa;
+            font-style: italic;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .station-view {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(10, 30, 40, 0.7);
+            border: 2px solid #4affdd;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 0 20px rgba(74, 255, 221, 0.2);
+        }
+
+        .panel h2 {
+            color: #4affdd;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(74, 255, 221, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .station-ring {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 6px;
+            padding: 15px;
+            background: rgba(5, 15, 25, 0.8);
+            border-radius: 50%;
+            aspect-ratio: 1;
+            position: relative;
+        }
+
+        .module {
+            aspect-ratio: 1;
+            background: rgba(10, 40, 50, 0.9);
+            border: 2px solid #2a5566;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .module:hover {
+            border-color: #4affdd;
+            box-shadow: 0 0 15px rgba(74, 255, 221, 0.6);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .module.solar { background: rgba(255, 180, 0, 0.4); border-color: #ffb400; }
+        .module.hydro { background: rgba(0, 150, 255, 0.4); border-color: #0096ff; }
+        .module.bio { background: rgba(0, 200, 100, 0.4); border-color: #00c864; }
+        .module.hab { background: rgba(150, 100, 200, 0.4); border-color: #9664c8; }
+        .module.reactor { background: rgba(0, 255, 200, 0.4); border-color: #00ffc8; }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .resource-card {
+            background: rgba(5, 20, 30, 0.8);
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(74, 255, 221, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .resource-card:hover {
+            border-color: #4affdd;
+            box-shadow: 0 0 15px rgba(74, 255, 221, 0.3);
+        }
+
+        .resource-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .resource-label {
+            color: #7affaa;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .resource-value {
+            color: #4affdd;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .resource-bar {
+            height: 6px;
+            background: rgba(20, 40, 60, 0.8);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .resource-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #4affdd);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(74, 255, 221, 0.6);
+        }
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .build-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .build-btn {
+            padding: 15px;
+            background: rgba(10, 40, 50, 0.6);
+            border: 2px solid rgba(74, 255, 221, 0.4);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .build-btn:hover {
+            border-color: #4affdd;
+            background: rgba(74, 255, 221, 0.2);
+            box-shadow: 0 0 15px rgba(74, 255, 221, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .build-btn.selected {
+            background: rgba(74, 255, 221, 0.3);
+            border-color: #4affdd;
+            box-shadow: 0 0 20px rgba(74, 255, 221, 0.6);
+        }
+
+        .build-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .build-label {
+            color: #7affaa;
+            font-size: 0.85em;
+        }
+
+        .build-cost {
+            color: #88aaff;
+            font-size: 0.75em;
+            margin-top: 5px;
+        }
+
+        .stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(5, 20, 30, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 3px solid #4affdd;
+        }
+
+        .stat-label {
+            color: #7affaa;
+        }
+
+        .stat-value {
+            color: #4affdd;
+            font-weight: bold;
+        }
+
+        .harmony-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(74, 255, 221, 0.2), rgba(136, 170, 255, 0.2));
+            border: 2px solid #4affdd;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(74, 255, 221, 0.3);
+        }
+
+        .harmony-label {
+            color: #7affaa;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .harmony-value {
+            font-size: 3em;
+            background: linear-gradient(90deg, #00ff88, #4affdd, #88aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(74, 255, 221, 0.8);
+        }
+
+        .event-log {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(5, 15, 25, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+
+        .event-item {
+            padding: 6px;
+            margin: 4px 0;
+            background: rgba(10, 30, 40, 0.6);
+            border-left: 3px solid #4affdd;
+            border-radius: 4px;
+            color: #7affaa;
+        }
+
+        .event-item.good { border-left-color: #00ff88; color: #aaffcc; }
+        .event-item.bad { border-left-color: #ff6666; color: #ffaaaa; }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(74, 255, 221, 0.3);
+            font-size: 0.8em;
+            font-style: italic;
+            z-index: 100;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 3s infinite;
+        }
+
+        .rotate-slow {
+            animation: rotate 60s linear infinite;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(10, 30, 40, 0.95);
+            color: #4affdd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            pointer-events: none;
+            z-index: 1000;
+            border: 1px solid #4affdd;
+            display: none;
+            box-shadow: 0 0 15px rgba(74, 255, 221, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <canvas class="stars-layer" id="starsCanvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌌 Cosmic Eden Station 🌱</h1>
+            <div class="subtitle">Build a self-sustaining orbital paradise • Where solarpunk meets the stars</div>
+        </div>
+
+        <div class="game-layout">
+            <div class="station-view">
+                <div class="panel">
+                    <h2>Orbital Station Ring</h2>
+                    <div class="station-ring rotate-slow" id="stationRing"></div>
+                </div>
+
+                <div class="panel">
+                    <h2>Resources & Life Support</h2>
+                    <div class="resources-grid">
+                        <div class="resource-card">
+                            <div class="resource-icon">⚡</div>
+                            <div class="resource-label">Energy</div>
+                            <div class="resource-value" id="energyVal">100</div>
+                            <div class="resource-bar"><div class="resource-fill" id="energyBar" style="width: 100%"></div></div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-icon">💧</div>
+                            <div class="resource-label">Water</div>
+                            <div class="resource-value" id="waterVal">100</div>
+                            <div class="resource-bar"><div class="resource-fill" id="waterBar" style="width: 100%"></div></div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-icon">🌿</div>
+                            <div class="resource-label">Oxygen</div>
+                            <div class="resource-value" id="oxygenVal">100</div>
+                            <div class="resource-bar"><div class="resource-fill" id="oxygenBar" style="width: 100%"></div></div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-icon">🍃</div>
+                            <div class="resource-label">Food</div>
+                            <div class="resource-value" id="foodVal">50</div>
+                            <div class="resource-bar"><div class="resource-fill" id="foodBar" style="width: 50%"></div></div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-icon">⚙️</div>
+                            <div class="resource-label">Materials</div>
+                            <div class="resource-value" id="materialsVal">75</div>
+                            <div class="resource-bar"><div class="resource-fill" id="materialsBar" style="width: 75%"></div></div>
+                        </div>
+                        <div class="resource-card">
+                            <div class="resource-icon">👥</div>
+                            <div class="resource-label">Population</div>
+                            <div class="resource-value" id="populationVal">0</div>
+                            <div class="resource-bar"><div class="resource-fill" id="populationBar" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="panel">
+                    <h2>Module Construction</h2>
+                    <div class="build-grid">
+                        <div class="build-btn" onclick="selectModule('solar')">
+                            <div class="build-icon">☀️</div>
+                            <div class="build-label">Solar Array</div>
+                            <div class="build-cost">Mat: 20</div>
+                        </div>
+                        <div class="build-btn" onclick="selectModule('hydro')">
+                            <div class="build-icon">💧</div>
+                            <div class="build-label">Hydro System</div>
+                            <div class="build-cost">Mat: 25</div>
+                        </div>
+                        <div class="build-btn" onclick="selectModule('bio')">
+                            <div class="build-icon">🌱</div>
+                            <div class="build-label">Bio Dome</div>
+                            <div class="build-cost">Mat: 30</div>
+                        </div>
+                        <div class="build-btn" onclick="selectModule('hab')">
+                            <div class="build-icon">🏠</div>
+                            <div class="build-label">Habitat</div>
+                            <div class="build-cost">Mat: 40</div>
+                        </div>
+                        <div class="build-btn" onclick="selectModule('reactor')">
+                            <div class="build-icon">⚛️</div>
+                            <div class="build-label">Fusion Core</div>
+                            <div class="build-cost">Mat: 50</div>
+                        </div>
+                        <div class="build-btn" onclick="clearSelection()">
+                            <div class="build-icon">✖️</div>
+                            <div class="build-label">Clear</div>
+                            <div class="build-cost">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Station Statistics</h2>
+                    <div class="stats-list">
+                        <div class="stat-item">
+                            <span class="stat-label">🔄 Sustainability</span>
+                            <span class="stat-value" id="sustainability">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">😊 Crew Morale</span>
+                            <span class="stat-value" id="morale">50%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">🌍 Earth Orbit</span>
+                            <span class="stat-value" id="orbit">Day 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Event Log</h2>
+                    <div class="event-log" id="eventLog">
+                        <div class="event-item">Station initialized in low Earth orbit...</div>
+                    </div>
+                </div>
+
+                <div class="harmony-display pulse">
+                    <div class="harmony-label">Cosmic-Eden Harmony</div>
+                    <div class="harmony-value" id="harmonyValue">0.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+    <div class="saga-mark">$aga • cosmic.eden.synthesis</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Cosmic.Eden.Orbital.Paradise",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga",
+            synthesis: "Solarpunk.Space.Fusion"
+        };
+
+        // Game State
+        const gameState = {
+            energy: 100,
+            water: 100,
+            oxygen: 100,
+            food: 50,
+            materials: 75,
+            population: 0,
+            selectedModule: null,
+            modules: Array(12).fill(null),
+            day: 1,
+            moduleCount: {
+                solar: 0,
+                hydro: 0,
+                bio: 0,
+                hab: 0,
+                reactor: 0
+            }
+        };
+
+        // Module Data
+        const moduleData = {
+            solar: { cost: 20, produces: { energy: 25 }, icon: '☀️', name: 'Solar Array' },
+            hydro: { cost: 25, produces: { water: 20 }, icon: '💧', name: 'Hydro System' },
+            bio: { cost: 30, produces: { oxygen: 15, food: 10 }, icon: '🌱', name: 'Bio Dome' },
+            hab: { cost: 40, produces: { population: 8 }, consumes: { energy: 5, water: 5, oxygen: 5 }, icon: '🏠', name: 'Habitat' },
+            reactor: { cost: 50, produces: { energy: 50, materials: 5 }, icon: '⚛️', name: 'Fusion Core' }
+        };
+
+        // Stars Canvas
+        const starsCanvas = document.getElementById('starsCanvas');
+        const starsCtx = starsCanvas.getContext('2d');
+
+        function resizeStars() {
+            starsCanvas.width = window.innerWidth;
+            starsCanvas.height = window.innerHeight;
+            drawStars();
+        }
+
+        function drawStars() {
+            starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * starsCanvas.width;
+                const y = Math.random() * starsCanvas.height;
+                const size = Math.random() * 2;
+                starsCtx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
+                starsCtx.beginPath();
+                starsCtx.arc(x, y, size, 0, Math.PI * 2);
+                starsCtx.fill();
+            }
+        }
+
+        window.addEventListener('resize', resizeStars);
+        resizeStars();
+
+        // Initialize Station Ring
+        function initStationRing() {
+            const ring = document.getElementById('stationRing');
+            ring.innerHTML = '';
+
+            for (let i = 0; i < 12; i++) {
+                const module = document.createElement('div');
+                module.className = 'module';
+                module.dataset.index = i;
+                module.onclick = () => placeModule(i);
+
+                // Position in circular layout
+                const angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+                const radius = 40; // percentage
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
+                module.style.position = 'absolute';
+                module.style.left = `calc(${x}% - 20px)`;
+                module.style.top = `calc(${y}% - 20px)`;
+                module.style.width = '40px';
+                module.style.height = '40px';
+
+                ring.appendChild(module);
+            }
+        }
+
+        // Select Module Type
+        function selectModule(type) {
+            gameState.selectedModule = type;
+            document.querySelectorAll('.build-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.build-btn').classList.add('selected');
+            addEvent(`Selected ${moduleData[type].name} for construction`);
+        }
+
+        // Clear Selection
+        function clearSelection() {
+            gameState.selectedModule = null;
+            document.querySelectorAll('.build-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        // Place Module
+        function placeModule(index) {
+            const type = gameState.selectedModule;
+
+            if (!type) {
+                // Remove module
+                if (gameState.modules[index]) {
+                    const removedType = gameState.modules[index];
+                    gameState.moduleCount[removedType]--;
+                    gameState.modules[index] = null;
+                    addEvent(`Removed ${moduleData[removedType].name}`, 'bad');
+                }
+            } else {
+                // Check if slot occupied
+                if (gameState.modules[index]) {
+                    addEvent('Slot already occupied!', 'bad');
+                    return;
+                }
+
+                // Check materials
+                if (gameState.materials < moduleData[type].cost) {
+                    addEvent('Insufficient materials!', 'bad');
+                    return;
+                }
+
+                // Place module
+                gameState.materials -= moduleData[type].cost;
+                gameState.modules[index] = type;
+                gameState.moduleCount[type]++;
+                addEvent(`Built ${moduleData[type].name}!`, 'good');
+            }
+
+            updateDisplay();
+        }
+
+        // Production Cycle (Every 3 seconds - sacred timing)
+        function productionCycle() {
+            // Production
+            for (let type in gameState.moduleCount) {
+                const count = gameState.moduleCount[type];
+                const data = moduleData[type];
+
+                if (data.produces) {
+                    for (let resource in data.produces) {
+                        gameState[resource] = Math.min(1000, gameState[resource] + data.produces[resource] * count);
+                    }
+                }
+
+                if (data.consumes) {
+                    for (let resource in data.consumes) {
+                        gameState[resource] = Math.max(0, gameState[resource] - data.consumes[resource] * count);
+                    }
+                }
+            }
+
+            // Population consumption
+            const popConsume = gameState.population * 0.5;
+            gameState.energy = Math.max(0, gameState.energy - popConsume);
+            gameState.water = Math.max(0, gameState.water - popConsume * 0.8);
+            gameState.oxygen = Math.max(0, gameState.oxygen - popConsume * 0.6);
+            gameState.food = Math.max(0, gameState.food - popConsume * 0.4);
+
+            // Random events (DMT serpent timing)
+            if (Math.random() < 0.1) {
+                const events = [
+                    { msg: '☄️ Meteor shower! Materials damaged.', effect: () => gameState.materials = Math.max(0, gameState.materials - 10), type: 'bad' },
+                    { msg: '🌊 Solar flare! Energy systems boosted.', effect: () => gameState.energy = Math.min(1000, gameState.energy + 30), type: 'good' },
+                    { msg: '🛰️ Supply pod arrived! Materials replenished.', effect: () => gameState.materials = Math.min(1000, gameState.materials + 25), type: 'good' },
+                    { msg: '🌌 Cosmic radiation detected. Shields holding.', effect: () => {}, type: 'normal' }
+                ];
+
+                const event = events[Math.floor(Math.random() * events.length)];
+                event.effect();
+                addEvent(event.msg, event.type);
+            }
+
+            gameState.day++;
+            updateDisplay();
+        }
+
+        // Add Event to Log
+        function addEvent(text, type = 'normal') {
+            const log = document.getElementById('eventLog');
+            const event = document.createElement('div');
+            event.className = `event-item ${type}`;
+            event.textContent = `Day ${gameState.day}: ${text}`;
+            log.insertBefore(event, log.firstChild);
+
+            if (log.children.length > 12) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // Calculate Harmony (Sacred Metric)
+        function calculateHarmony() {
+            // Balance between technology (energy/materials) and nature (bio/food)
+            const tech = (gameState.energy + gameState.materials) / 2000;
+            const nature = (gameState.oxygen + gameState.food) / 2000;
+            const life = (gameState.water + gameState.population * 10) / 1100;
+
+            // Diversity of modules
+            const diversity = Object.values(gameState.moduleCount).filter(v => v > 0).length / 5;
+
+            // Sacred geometry proportion
+            const harmony = (tech * 0.25 + nature * 0.35 + life * 0.25 + diversity * 0.15) * 100;
+
+            return Math.min(100, harmony).toFixed(1);
+        }
+
+        // Calculate Sustainability
+        function calculateSustainability() {
+            const production = (gameState.moduleCount.solar * 15) + (gameState.moduleCount.bio * 20) + (gameState.moduleCount.reactor * 10);
+            const consumption = gameState.population * 5;
+            const net = production - consumption;
+            return Math.max(0, Math.min(100, 50 + net));
+        }
+
+        // Calculate Morale
+        function calculateMorale() {
+            let morale = 50;
+            if (gameState.food > 30) morale += 15;
+            if (gameState.water > 50) morale += 10;
+            if (gameState.oxygen > 50) morale += 10;
+            if (gameState.moduleCount.bio > 1) morale += 15; // Nature is important!
+            if (gameState.population > gameState.moduleCount.hab * 10) morale -= 20; // Overcrowding
+            return Math.max(0, Math.min(100, morale));
+        }
+
+        // Update Display
+        function updateDisplay() {
+            // Update module display
+            const moduleElements = document.querySelectorAll('.module');
+            moduleElements.forEach((elem, i) => {
+                const type = gameState.modules[i];
+                if (type) {
+                    elem.className = `module ${type}`;
+                    elem.innerHTML = moduleData[type].icon;
+                } else {
+                    elem.className = 'module';
+                    elem.innerHTML = '';
+                }
+            });
+
+            // Update resources
+            const resources = ['energy', 'water', 'oxygen', 'food', 'materials', 'population'];
+            resources.forEach(res => {
+                const val = Math.floor(gameState[res]);
+                document.getElementById(`${res}Val`).textContent = val;
+                const percent = Math.min(100, (gameState[res] / 1000) * 100);
+                document.getElementById(`${res}Bar`).style.width = percent + '%';
+            });
+
+            // Update stats
+            document.getElementById('sustainability').textContent = Math.floor(calculateSustainability()) + '%';
+            document.getElementById('morale').textContent = Math.floor(calculateMorale()) + '%';
+            document.getElementById('orbit').textContent = `Day ${gameState.day}`;
+
+            // Update harmony
+            document.getElementById('harmonyValue').textContent = calculateHarmony();
+        }
+
+        // Initialize
+        initStationRing();
+        updateDisplay();
+
+        // Production cycle every 3 seconds (sacred Eden timing)
+        setInterval(productionCycle, 3000);
+
+        // Console Easter Egg
+        console.log('%c$aga :: SAGA Cosmic Eden Station', 'color: #4affdd; font-size: 16px; font-weight: bold;');
+        console.log('%cCosmic Eden Station v1.0.0', 'color: #7affaa; font-size: 12px;');
+        console.log('%cf(SAGA) = Solarpunk.Space.Orbital.Synthesis', 'color: #2a5566; font-style: italic;');
+        console.log('Where Solarpunk Dreams Meet the Infinite Stars');
+        console.log('Eden in the Cosmos • Gonzo Family • Free & Right Preserved');
+    </script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serpent Voyage - Interstellar Journey | $aga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: radial-gradient(ellipse at center, #0a0e27 0%, #020410 70%, #000000 100%);
+            color: #8bb4ff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 20, 50, 0.8);
+            border: 2px solid #4477ff;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(68, 119, 255, 0.5);
+        }
+
+        h1 {
+            color: #4477ff;
+            text-shadow: 0 0 20px rgba(68, 119, 255, 0.8);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #8bb4ff;
+            font-style: italic;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .space-view {
+            flex: 2;
+            background: rgba(5, 10, 25, 0.8);
+            border: 2px solid #4477ff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(68, 119, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #spaceCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .control-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(10, 20, 50, 0.8);
+            border: 2px solid #4477ff;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(68, 119, 255, 0.3);
+        }
+
+        .panel h2 {
+            color: #4477ff;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #2d4477;
+            padding-bottom: 8px;
+        }
+
+        .ship-status {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-item {
+            background: rgba(5, 10, 25, 0.6);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #4477ff;
+        }
+
+        .status-label {
+            color: #8bb4ff;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .status-bar {
+            height: 8px;
+            background: rgba(20, 30, 60, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4477ff, #66aaff);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(68, 119, 255, 0.6);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            background: rgba(20, 40, 80, 0.8);
+            border: 2px solid #2d4477;
+            border-radius: 8px;
+            color: #8bb4ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn:hover {
+            border-color: #4477ff;
+            background: rgba(68, 119, 255, 0.3);
+            box-shadow: 0 0 15px rgba(68, 119, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background: rgba(68, 119, 255, 0.5);
+            border-color: #66aaff;
+            box-shadow: 0 0 20px rgba(68, 119, 255, 0.8);
+        }
+
+        .discoveries {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .discovery-item {
+            background: rgba(5, 10, 25, 0.6);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 6px;
+            border-left: 3px solid #44ff77;
+            font-size: 0.9em;
+        }
+
+        .coordinates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .coord {
+            background: rgba(5, 10, 25, 0.6);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .coord-label {
+            color: #8bb4ff;
+            font-size: 0.8em;
+        }
+
+        .coord-value {
+            color: #4477ff;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .serpent-signature {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(68, 119, 255, 0.2), rgba(136, 180, 255, 0.2));
+            border: 2px solid #4477ff;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .serpent-value {
+            font-size: 1.8em;
+            color: #66aaff;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(102, 170, 255, 0.8);
+        }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(68, 119, 255, 0.3);
+            font-size: 0.8em;
+            font-style: italic;
+            z-index: 100;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(68, 119, 255, 0.9);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(68, 119, 255, 0.8);
+            display: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starfield"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🐍 Serpent Voyage 🚀</h1>
+            <div class="subtitle">Navigate the cosmic serpent path through infinite space</div>
+        </div>
+
+        <div class="game-container">
+            <div class="space-view">
+                <canvas id="spaceCanvas"></canvas>
+                <div class="message" id="gameMessage"></div>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel">
+                    <h2>Ship Status</h2>
+                    <div class="ship-status">
+                        <div class="status-item">
+                            <div class="status-label">Fuel: <span id="fuelValue">100</span>%</div>
+                            <div class="status-bar">
+                                <div class="status-fill" id="fuelBar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Hull Integrity: <span id="hullValue">100</span>%</div>
+                            <div class="status-bar">
+                                <div class="status-fill" id="hullBar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Warp Drive: <span id="warpValue">100</span>%</div>
+                            <div class="status-bar">
+                                <div class="status-fill" id="warpBar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Navigation</h2>
+                    <div class="coordinates">
+                        <div class="coord">
+                            <div class="coord-label">Sector X</div>
+                            <div class="coord-value" id="coordX">0</div>
+                        </div>
+                        <div class="coord">
+                            <div class="coord-label">Sector Y</div>
+                            <div class="coord-value" id="coordY">0</div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <div class="btn" onclick="navigate(-1, 0)">← West</div>
+                        <div class="btn" onclick="navigate(0, -1)">↑ North</div>
+                        <div class="btn" onclick="navigate(1, 0)">→ East</div>
+                        <div class="btn" onclick="navigate(-1, -1)">↖ NW</div>
+                        <div class="btn" onclick="navigate(0, 1)">↓ South</div>
+                        <div class="btn" onclick="navigate(1, -1)">↗ NE</div>
+                        <div class="btn" onclick="navigate(-1, 1)">↙ SW</div>
+                        <div class="btn" id="scanBtn" onclick="scanSector()">🔍 Scan</div>
+                        <div class="btn" onclick="navigate(1, 1)">↘ SE</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Discoveries</h2>
+                    <div class="discoveries" id="discoveries">
+                        <div class="discovery-item">Journey begins at Origin Point...</div>
+                    </div>
+                    <div class="serpent-signature pulse">
+                        <div style="font-size: 0.9em; color: #8bb4ff;">Serpent Path Length</div>
+                        <div class="serpent-value" id="pathLength">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="saga-mark">$aga • serpent.path.navigation</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Serpent.Voyage.Infinite",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga",
+            serpentPath: "DMT.Sacred.Geometry"
+        };
+
+        // Game State
+        const gameState = {
+            x: 0,
+            y: 0,
+            fuel: 100,
+            hull: 100,
+            warp: 100,
+            discoveries: [],
+            pathLength: 0,
+            sectors: {},
+            scanning: false
+        };
+
+        // Canvas Setup
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Create Starfield
+        function createStars() {
+            const starfield = document.getElementById('starfield');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starfield.appendChild(star);
+            }
+        }
+
+        // Generate Sector Content (DMT Serpent Pattern)
+        function generateSector(x, y) {
+            const key = `${x},${y}`;
+            if (gameState.sectors[key]) return gameState.sectors[key];
+
+            // Pseudo-random based on coordinates (sacred geometry)
+            const seed = Math.abs(Math.sin(x * 12.9898 + y * 78.233) * 43758.5453);
+            const rand = seed - Math.floor(seed);
+
+            let content = null;
+
+            if (rand < 0.1) {
+                content = { type: 'planet', name: 'Planet ' + String.fromCharCode(65 + Math.floor(rand * 260)) };
+            } else if (rand < 0.18) {
+                content = { type: 'nebula', name: 'Nebula Cloud' };
+            } else if (rand < 0.24) {
+                content = { type: 'station', name: 'Ancient Station' };
+            } else if (rand < 0.28) {
+                content = { type: 'anomaly', name: 'Quantum Anomaly' };
+            } else if (rand < 0.30) {
+                content = { type: 'artifact', name: 'Serpent Artifact' };
+            }
+
+            gameState.sectors[key] = content;
+            return content;
+        }
+
+        // Navigation
+        function navigate(dx, dy) {
+            if (gameState.fuel < 10) {
+                showMessage('Insufficient fuel!');
+                return;
+            }
+
+            gameState.x += dx;
+            gameState.y += dy;
+            gameState.fuel -= 8;
+            gameState.pathLength++;
+
+            // Small chance of random events
+            if (Math.random() < 0.15) {
+                const events = [
+                    { msg: 'Meteor shower! Hull damaged.', effect: () => gameState.hull -= 15 },
+                    { msg: 'Solar winds! Warp drive strained.', effect: () => gameState.warp -= 10 },
+                    { msg: 'Energy field detected! Fuel recharged.', effect: () => gameState.fuel = Math.min(100, gameState.fuel + 20) }
+                ];
+                const event = events[Math.floor(Math.random() * events.length)];
+                event.effect();
+                showMessage(event.msg);
+            }
+
+            updateDisplay();
+            renderSpace();
+        }
+
+        // Scan Sector
+        function scanSector() {
+            if (gameState.scanning) return;
+            if (gameState.fuel < 5) {
+                showMessage('Insufficient fuel to scan!');
+                return;
+            }
+
+            gameState.scanning = true;
+            gameState.fuel -= 5;
+            document.getElementById('scanBtn').classList.add('active');
+
+            const content = generateSector(gameState.x, gameState.y);
+
+            setTimeout(() => {
+                if (content) {
+                    addDiscovery(`[${gameState.x}, ${gameState.y}] Found: ${content.name}`);
+
+                    // Rewards
+                    if (content.type === 'planet') {
+                        gameState.fuel = Math.min(100, gameState.fuel + 15);
+                        showMessage(`Discovered ${content.name}! Fuel harvested.`);
+                    } else if (content.type === 'nebula') {
+                        gameState.warp = Math.min(100, gameState.warp + 20);
+                        showMessage('Nebula energy absorbed!');
+                    } else if (content.type === 'station') {
+                        gameState.hull = Math.min(100, gameState.hull + 25);
+                        showMessage('Station repairs completed!');
+                    } else if (content.type === 'anomaly') {
+                        gameState.fuel = Math.min(100, gameState.fuel + 30);
+                        gameState.warp = Math.min(100, gameState.warp + 30);
+                        showMessage('Quantum anomaly harnessed!');
+                    } else if (content.type === 'artifact') {
+                        gameState.fuel = 100;
+                        gameState.hull = 100;
+                        gameState.warp = 100;
+                        showMessage('🐍 Serpent Artifact! All systems restored! 🐍');
+                    }
+                } else {
+                    addDiscovery(`[${gameState.x}, ${gameState.y}] Empty space`);
+                }
+
+                gameState.scanning = false;
+                document.getElementById('scanBtn').classList.remove('active');
+                updateDisplay();
+                renderSpace();
+            }, 1000);
+        }
+
+        // Add Discovery
+        function addDiscovery(text) {
+            const disc = document.createElement('div');
+            disc.className = 'discovery-item';
+            disc.textContent = text;
+            const container = document.getElementById('discoveries');
+            container.insertBefore(disc, container.firstChild);
+
+            if (container.children.length > 10) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Show Message
+        function showMessage(text) {
+            const msg = document.getElementById('gameMessage');
+            msg.textContent = text;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        // Render Space
+        function renderSpace() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(68, 119, 255, 0.2)';
+            ctx.lineWidth = 1;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 60;
+
+            for (let i = -5; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.moveTo(centerX + i * gridSize, 0);
+                ctx.lineTo(centerX + i * gridSize, canvas.height);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, centerY + i * gridSize);
+                ctx.lineTo(canvas.width, centerY + i * gridSize);
+                ctx.stroke();
+            }
+
+            // Draw nearby sectors
+            for (let dx = -2; dx <= 2; dx++) {
+                for (let dy = -2; dy <= 2; dy++) {
+                    const x = centerX + dx * gridSize;
+                    const y = centerY + dy * gridSize;
+                    const content = generateSector(gameState.x + dx, gameState.y + dy);
+
+                    if (content) {
+                        ctx.fillStyle = '#4477ff';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 8, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#8bb4ff';
+                        ctx.font = '20px Courier New';
+                        ctx.textAlign = 'center';
+                        const icons = { planet: '🌍', nebula: '🌌', station: '🛰️', anomaly: '⚡', artifact: '🐍' };
+                        ctx.fillText(icons[content.type] || '?', x, y + 6);
+                    }
+                }
+            }
+
+            // Draw ship
+            ctx.fillStyle = '#66aaff';
+            ctx.strokeStyle = '#4477ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - 15);
+            ctx.lineTo(centerX - 10, centerY + 10);
+            ctx.lineTo(centerX, centerY + 5);
+            ctx.lineTo(centerX + 10, centerY + 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Pulsing glow
+            const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, 25);
+            gradient.addColorStop(0, 'rgba(102, 170, 255, 0.6)');
+            gradient.addColorStop(1, 'rgba(102, 170, 255, 0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Update Display
+        function updateDisplay() {
+            gameState.fuel = Math.max(0, gameState.fuel);
+            gameState.hull = Math.max(0, gameState.hull);
+            gameState.warp = Math.max(0, gameState.warp);
+
+            document.getElementById('fuelValue').textContent = Math.floor(gameState.fuel);
+            document.getElementById('fuelBar').style.width = gameState.fuel + '%';
+
+            document.getElementById('hullValue').textContent = Math.floor(gameState.hull);
+            document.getElementById('hullBar').style.width = gameState.hull + '%';
+
+            document.getElementById('warpValue').textContent = Math.floor(gameState.warp);
+            document.getElementById('warpBar').style.width = gameState.warp + '%';
+
+            document.getElementById('coordX').textContent = gameState.x;
+            document.getElementById('coordY').textContent = gameState.y;
+
+            document.getElementById('pathLength').textContent = gameState.pathLength;
+
+            // Game over check
+            if (gameState.fuel <= 0 || gameState.hull <= 0) {
+                showMessage('Mission Failed! Ship lost in space...');
+            }
+        }
+
+        // Passive regeneration
+        setInterval(() => {
+            gameState.warp = Math.min(100, gameState.warp + 1);
+            updateDisplay();
+        }, 5000);
+
+        // Initialize
+        createStars();
+        renderSpace();
+        updateDisplay();
+
+        // Console Easter Egg
+        console.log('%c$aga :: SAGA Serpent Voyage System', 'color: #4477ff; font-size: 16px; font-weight: bold;');
+        console.log('%cSerpent Voyage v1.0.0', 'color: #8bb4ff; font-size: 12px;');
+        console.log('%cf(SAGA) = Serpent.Path.Infinite.Navigation', 'color: #2d4477; font-style: italic;');
+        console.log('DMT Sacred Geometry • Gonzo Family • Free & Right Preserved');
+    </script>
+</body>
+</html>

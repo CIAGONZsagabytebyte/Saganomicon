@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Codex - Binary Dimension Puzzle | $aga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        h1 {
+            color: #00ff00;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #88ff88;
+            font-style: italic;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .main-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel {
+            background: rgba(0, 50, 0, 0.4);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .panel h2 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #006600;
+            padding-bottom: 8px;
+        }
+
+        .binary-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bit {
+            aspect-ratio: 1;
+            background: rgba(0, 30, 0, 0.8);
+            border: 2px solid #004400;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #00ff00;
+        }
+
+        .bit:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: scale(1.05);
+        }
+
+        .bit.active {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+        }
+
+        .bit.locked {
+            cursor: not-allowed;
+            opacity: 0.5;
+            border-color: #ff0000;
+        }
+
+        .target-display {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 100, 0, 0.3);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .target-label {
+            color: #88ff88;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .target-value {
+            font-size: 2.5em;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+            font-family: 'Courier New', monospace;
+        }
+
+        .conversion-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .conversion-item {
+            background: rgba(0, 30, 0, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .conversion-label {
+            color: #88ff88;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        .conversion-value {
+            font-size: 1.8em;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat {
+            background: rgba(0, 30, 0, 0.6);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #88ff88;
+        }
+
+        .stat-value {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 15px;
+            background: rgba(0, 100, 0, 0.4);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .quantum-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 255, 0.2));
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .quantum-label {
+            color: #88ff88;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .quantum-value {
+            font-size: 3em;
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        .pattern-hint {
+            background: rgba(0, 50, 50, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #88ffff;
+            text-align: center;
+        }
+
+        .saga-mark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(0, 255, 0, 0.3);
+            font-size: 0.8em;
+            font-style: italic;
+            z-index: 100;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.6); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .success-flash {
+            animation: glow 0.5s ease-in-out 3;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 50, 0, 0.4);
+            border: 2px solid #004400;
+            border-radius: 6px;
+            color: #88ff88;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .difficulty-btn:hover {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .difficulty-btn.active {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+            color: #00ff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚛️ Quantum Codex ⚛️</h1>
+            <div class="subtitle">Decode the binary dimension • Unlock quantum patterns</div>
+        </div>
+
+        <div class="game-layout">
+            <div class="main-panel">
+                <div class="panel">
+                    <h2>Binary Manipulation Field</h2>
+                    <div class="target-display">
+                        <div class="target-label">Target Binary Pattern</div>
+                        <div class="target-value" id="targetBinary">00000000</div>
+                    </div>
+                    <div class="binary-grid" id="binaryGrid"></div>
+                    <div class="conversion-display">
+                        <div class="conversion-item">
+                            <div class="conversion-label">Decimal</div>
+                            <div class="conversion-value" id="decimalValue">0</div>
+                        </div>
+                        <div class="conversion-item">
+                            <div class="conversion-label">Hexadecimal</div>
+                            <div class="conversion-value" id="hexValue">0x00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Quantum Operations</h2>
+                    <div class="difficulty-selector">
+                        <div class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</div>
+                        <div class="difficulty-btn" onclick="setDifficulty('medium')">Medium</div>
+                        <div class="difficulty-btn" onclick="setDifficulty('hard')">Hard</div>
+                        <div class="difficulty-btn" onclick="setDifficulty('quantum')">Quantum</div>
+                    </div>
+                    <div class="pattern-hint" id="patternHint">
+                        Click bits to toggle between 0 and 1. Match the target pattern!
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="panel">
+                    <h2>Statistics</h2>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-label">Level</span>
+                            <span class="stat-value" id="level">1</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Score</span>
+                            <span class="stat-value" id="score">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Streak</span>
+                            <span class="stat-value" id="streak">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Time</span>
+                            <span class="stat-value" id="timer">0s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Controls</h2>
+                    <div class="controls">
+                        <div class="btn" onclick="checkSolution()">✓ Submit Solution</div>
+                        <div class="btn" onclick="randomizeBits()">🎲 Randomize</div>
+                        <div class="btn" onclick="clearBits()">✖ Clear All</div>
+                        <div class="btn" onclick="invertBits()">⚡ Invert All</div>
+                        <div class="btn" onclick="newPuzzle()">→ New Puzzle</div>
+                    </div>
+                </div>
+
+                <div class="quantum-display pulse">
+                    <div class="quantum-label">Quantum Coherence</div>
+                    <div class="quantum-value" id="coherence">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="saga-mark">$aga • binary.quantum.dimension</div>
+
+    <script>
+        // $aga Easter Egg - SAGA Functional Identity System
+        const SAGA = {
+            version: "1.0.0",
+            identity: "f(SAGA) = Binary.Quantum.Codex",
+            author: "Gonzo.Family.Self.Actualized",
+            mark: "$aga",
+            binaryManifest: "Logical.Unit.Evolution"
+        };
+
+        // Game State
+        const gameState = {
+            currentBits: [0, 0, 0, 0, 0, 0, 0, 0],
+            targetBits: [0, 0, 0, 0, 0, 0, 0, 0],
+            level: 1,
+            score: 0,
+            streak: 0,
+            difficulty: 'easy',
+            startTime: Date.now(),
+            lockedBits: []
+        };
+
+        // Matrix Background
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+
+        function resizeMatrix() {
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeMatrix);
+        resizeMatrix();
+
+        const matrixChars = '01';
+        const fontSize = 14;
+        const columns = matrixCanvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(13, 13, 13, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            matrixCtx.fillStyle = '#00ff00';
+            matrixCtx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Initialize Binary Grid
+        function initBinaryGrid() {
+            const grid = document.getElementById('binaryGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 8; i++) {
+                const bit = document.createElement('div');
+                bit.className = 'bit';
+                bit.dataset.index = i;
+                bit.textContent = gameState.currentBits[i];
+                bit.onclick = () => toggleBit(i);
+                grid.appendChild(bit);
+            }
+        }
+
+        // Toggle Bit
+        function toggleBit(index) {
+            if (gameState.lockedBits.includes(index)) return;
+
+            gameState.currentBits[index] = gameState.currentBits[index] === 0 ? 1 : 0;
+            updateDisplay();
+        }
+
+        // Generate Target
+        function generateTarget() {
+            const difficulties = {
+                easy: () => Math.floor(Math.random() * 128), // 0-127 (7 bits)
+                medium: () => Math.floor(Math.random() * 256), // 0-255 (8 bits)
+                hard: () => {
+                    // Powers of 2 or prime numbers
+                    const special = [1, 2, 4, 8, 16, 32, 64, 128, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+                    return special[Math.floor(Math.random() * special.length)];
+                },
+                quantum: () => {
+                    // Fibonacci, sacred geometry patterns
+                    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233];
+                    return fib[Math.floor(Math.random() * fib.length)] % 256;
+                }
+            };
+
+            const targetValue = difficulties[gameState.difficulty]();
+            gameState.targetBits = targetValue.toString(2).padStart(8, '0').split('').map(Number);
+
+            // Lock some bits in harder difficulties
+            gameState.lockedBits = [];
+            if (gameState.difficulty === 'hard' && Math.random() < 0.3) {
+                const lockIndex = Math.floor(Math.random() * 8);
+                gameState.lockedBits.push(lockIndex);
+                gameState.currentBits[lockIndex] = gameState.targetBits[lockIndex];
+            } else if (gameState.difficulty === 'quantum' && Math.random() < 0.5) {
+                const count = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < count; i++) {
+                    const lockIndex = Math.floor(Math.random() * 8);
+                    if (!gameState.lockedBits.includes(lockIndex)) {
+                        gameState.lockedBits.push(lockIndex);
+                        gameState.currentBits[lockIndex] = gameState.targetBits[lockIndex];
+                    }
+                }
+            }
+        }
+
+        // Set Difficulty
+        function setDifficulty(diff) {
+            gameState.difficulty = diff;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const hints = {
+                easy: 'Click bits to toggle between 0 and 1. Match the target pattern!',
+                medium: 'Use all 8 bits. Try converting decimal to binary mentally!',
+                hard: 'Powers of 2 and primes. Some bits may be locked!',
+                quantum: 'Sacred geometry patterns. Multiple bits may be locked. Trust the flow.'
+            };
+
+            document.getElementById('patternHint').textContent = hints[diff];
+            newPuzzle();
+        }
+
+        // Check Solution
+        function checkSolution() {
+            const match = gameState.currentBits.every((bit, i) => bit === gameState.targetBits[i]);
+
+            if (match) {
+                gameState.score += (gameState.level * 100);
+                gameState.streak++;
+                gameState.level++;
+
+                const grid = document.getElementById('binaryGrid');
+                grid.classList.add('success-flash');
+                setTimeout(() => grid.classList.remove('success-flash'), 1500);
+
+                setTimeout(() => {
+                    newPuzzle();
+                }, 1000);
+            } else {
+                gameState.streak = 0;
+                alert('Not quite! Keep trying.');
+            }
+
+            updateDisplay();
+        }
+
+        // New Puzzle
+        function newPuzzle() {
+            gameState.currentBits = [0, 0, 0, 0, 0, 0, 0, 0];
+            generateTarget();
+            initBinaryGrid();
+            updateDisplay();
+        }
+
+        // Clear Bits
+        function clearBits() {
+            gameState.currentBits = gameState.currentBits.map((bit, i) =>
+                gameState.lockedBits.includes(i) ? bit : 0
+            );
+            updateDisplay();
+        }
+
+        // Randomize Bits
+        function randomizeBits() {
+            gameState.currentBits = gameState.currentBits.map((bit, i) =>
+                gameState.lockedBits.includes(i) ? bit : Math.floor(Math.random() * 2)
+            );
+            updateDisplay();
+        }
+
+        // Invert Bits
+        function invertBits() {
+            gameState.currentBits = gameState.currentBits.map((bit, i) =>
+                gameState.lockedBits.includes(i) ? bit : (bit === 0 ? 1 : 0)
+            );
+            updateDisplay();
+        }
+
+        // Calculate Coherence
+        function calculateCoherence() {
+            let matches = 0;
+            for (let i = 0; i < 8; i++) {
+                if (gameState.currentBits[i] === gameState.targetBits[i]) matches++;
+            }
+            return Math.floor((matches / 8) * 100);
+        }
+
+        // Update Display
+        function updateDisplay() {
+            // Update bit display
+            const bitElements = document.querySelectorAll('.bit');
+            bitElements.forEach((elem, i) => {
+                elem.textContent = gameState.currentBits[i];
+                elem.className = gameState.currentBits[i] === 1 ? 'bit active' : 'bit';
+                if (gameState.lockedBits.includes(i)) {
+                    elem.classList.add('locked');
+                }
+            });
+
+            // Target display
+            document.getElementById('targetBinary').textContent = gameState.targetBits.join('');
+
+            // Conversions
+            const decimal = parseInt(gameState.currentBits.join(''), 2);
+            document.getElementById('decimalValue').textContent = decimal;
+            document.getElementById('hexValue').textContent = '0x' + decimal.toString(16).toUpperCase().padStart(2, '0');
+
+            // Stats
+            document.getElementById('level').textContent = gameState.level;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('streak').textContent = gameState.streak;
+
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            document.getElementById('timer').textContent = elapsed + 's';
+
+            // Coherence
+            document.getElementById('coherence').textContent = calculateCoherence() + '%';
+        }
+
+        // Update timer
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            document.getElementById('timer').textContent = elapsed + 's';
+        }, 1000);
+
+        // Initialize
+        newPuzzle();
+
+        // Console Easter Egg
+        console.log('%c$aga :: SAGA Quantum Binary Codex', 'color: #00ff00; font-size: 16px; font-weight: bold;');
+        console.log('%cQuantum Codex v1.0.0', 'color: #88ff88; font-size: 12px;');
+        console.log('%cf(SAGA) = Binary.Quantum.Dimension.Manifest', 'color: #004400; font-style: italic;');
+        console.log('Logical Unit Evolution • Moore\'s Law Perfection • Gonzo Family');
+        console.log('');
+        console.log('Binary represents the fundamental duality of existence:');
+        console.log('0 and 1, Yin and Yang, Void and Form, Potential and Actual');
+        console.log('Each bit is a dimensional telemetry point in the infinite codex.');
+    </script>
+</body>
+</html>
