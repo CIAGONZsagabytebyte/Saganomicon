@@ -1,0 +1,18 @@
+# Saganomic AI Catalyst - Python Requirements
+# $aga • SAGA Functional Identity System
+# MIT License (c) 2025 Saga Gonzo
+
+# Core requirements (optional - system works without these)
+numpy>=1.19.0  # For optimized matrix operations (RTX 5090 acceleration)
+psutil>=5.8.0  # For system telemetry and monitoring
+
+# All requirements are optional - system falls back to pure Python
+# Install with: pip install -r requirements.txt
+# Or install individually as needed
+
+# For GPU acceleration (advanced):
+# cupy>=10.0.0  # CUDA-accelerated NumPy (for RTX 5090)
+# torch>=1.10.0  # PyTorch for deep learning optimization
+
+# Note: The system is designed to work perfectly with zero dependencies
+# Dependencies only enhance performance and monitoring capabilities
