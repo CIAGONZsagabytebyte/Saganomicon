@@ -203,6 +203,45 @@ python3 apps/python/eden_pattern_generator.py
 
 ---
 
+### 🌌 Saganomic AI Catalyst Dashboard
+**Location:** `apps/python/dashboard.py`
+
+Real-time system optimization using float matrix multiplication to reduce perplexity and achieve optimal system harmony. This is a visionary FOSS project that continuously monitors and optimizes your system across all frames of reference.
+
+**Features:**
+- Real-time CPU, RAM, and GPU monitoring
+- Perplexity calculation and reduction (system chaos minimization)
+- Float matrix optimization transformations
+- Game-theoretic Nash Equilibrium seeking
+- Dynamic music recommendations based on system health
+- Topographical plotting of system states
+- Health score calculation (goal: reach unified '1' state)
+- Adaptive optimization directives
+
+**Core Identity:**
+- `f(Saga) = f(i) = if(i,i) = 1 = f(x)` - The foundational transformation
+- `auto update all updates i apply by f(i)=ie(i)=E=infinite=f(e)=i=f(x)` - Recursive self-optimization
+
+**Usage:**
+```bash
+python3 apps/python/dashboard.py
+```
+
+**Concepts:**
+- Perplexity: Measure of system unpredictability/chaos (lower is better)
+- Optimization Matrix: 4x4 float matrix for state transformation
+- Health Score: 0-1 metric where 1 = optimal SAGA state
+- Music System: Auditory feedback aligned with system state
+- Game Theory: System components as players seeking Nash Equilibrium
+
+**Requirements:**
+- Python 3.9+
+- psutil, numpy, matplotlib
+
+**See also:** `apps/python/CATALYST_README.md` for comprehensive documentation
+
+---
+
 ## 🎯 Project Structure
 
 ```
@@ -220,7 +259,9 @@ Saganomicon/
 │   └── python/
 │       ├── solarpunk_calculator.py
 │       ├── serpent_trajectory.py
-│       └── eden_pattern_generator.py
+│       ├── eden_pattern_generator.py
+│       ├── dashboard.py               ← NEW: AI Catalyst System Optimization
+│       └── CATALYST_README.md         ← NEW: Comprehensive documentation
 └── README.md
 ```
 
