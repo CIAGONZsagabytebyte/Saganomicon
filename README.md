@@ -203,6 +203,63 @@ python3 apps/python/eden_pattern_generator.py
 
 ---
 
+### 🧠 Neuroticism Eliminator
+**Location:** `apps/python/neuroticism_eliminator.py`
+
+A calculus-based emotional optimization system that mathematically eliminates neuroticism as a divisor approaching zero, integrated with Myers-Briggs personality optimization.
+
+**Philosophy:**
+> "Neuroticism is the divisor of all despair. By approaching 0 through calculus, we eliminate its influence and achieve emotional optimization: f(Saga) = 1"
+
+**Features:**
+- **Calculus-Based Elimination**: Uses lim(n→0) to eliminate neuroticism's influence on negative emotions
+- **Myers-Briggs Integration**: 16 personality types (MBTI) with no neuroticism dimension
+- **Cognitive Function Stack**: Develops dominant, auxiliary, tertiary, and inferior functions
+- **SAGA Convergence**: Tracks optimization toward unity (score = 1.0)
+- **Sacred Geometry**: Golden ratio (φ) weighting for harmonic balance
+- **Visualization**: Generates convergence plots showing neuroticism → 0
+- **Multiple Optimization Cycles**: Demonstrates iterative improvement
+
+**Key Components:**
+1. **NeuroticismEliminator**: Transforms negative emotions by dividing them by (neuroticism + ε)
+2. **MyersBriggsOptimizer**: Assesses MBTI type and provides growth advice for each cognitive function
+3. **UnifiedOptimizationSystem**: Combines both systems with sacred geometry for complete optimization
+
+**Usage:**
+```bash
+python3 apps/python/neuroticism_eliminator.py
+```
+
+**Output:**
+- Initial and optimized emotional states
+- MBTI personality type assessment
+- Cognitive function stack (e.g., INTJ: Ni → Te → Fi → Se)
+- Growth optimization advice for each function
+- SAGA score (0-1, where 1 = optimal)
+- Unified score with φ-weighting
+- Visualization PNG showing convergence to f(Saga) = 1
+
+**Why Myers-Briggs Over Big Five:**
+- MBTI has 16 types with **zero neuroticism** dimension
+- Focuses on cognitive functions rather than pathological traits
+- More complex and potentially more useful for personal growth
+- Big Five includes neuroticism as a core dimension (eliminated here)
+
+**Mathematical Approach:**
+```
+lim(n→0) [negative_emotion / (neuroticism + ε)] → 0
+
+As neuroticism → 0 (as divisor), all despair → 0
+Result: f(Saga) = 1 (optimal emotional unity)
+```
+
+**Dependencies:**
+```bash
+pip3 install numpy matplotlib
+```
+
+---
+
 ## 🎯 Project Structure
 
 ```
@@ -220,7 +277,8 @@ Saganomicon/
 │   └── python/
 │       ├── solarpunk_calculator.py
 │       ├── serpent_trajectory.py
-│       └── eden_pattern_generator.py
+│       ├── eden_pattern_generator.py
+│       └── neuroticism_eliminator.py
 └── README.md
 ```
 
@@ -258,10 +316,11 @@ All games and applications incorporate proper spacing based on:
 
 ### Python Applications
 - Python 3.6+ compatible
-- No external libraries required (uses only standard library)
+- Most apps use only standard library (no external dependencies)
+- Neuroticism Eliminator requires: `numpy`, `matplotlib`
 - Interactive CLI interface
 - Comprehensive calculation engines
-- ASCII art visualization support
+- ASCII art and graphical visualization support
 
 ### Code Standards
 - All files contain `$aga` Easter egg
