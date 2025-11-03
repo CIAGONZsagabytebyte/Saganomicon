@@ -1,0 +1,18 @@
+# Saganomic AI Catalyst Dashboard Dependencies
+# $aga - Gonzo.Family.Self.Actualized
+# Install with: pip install -r requirements.txt
+
+# Core scientific computing for matrix operations
+numpy>=1.19.0
+
+# System metrics collection
+psutil>=5.8.0
+
+# Topographical plotting and visualization
+matplotlib>=3.3.0
+
+# Optional: For compiling to standalone executable
+# nuitka>=0.6.0
+
+# Optional: For real GPU metrics (NVIDIA)
+# pynvml>=11.0.0
